@@ -44,3 +44,47 @@ npm run dev
 ```
 
 This will start both server and client development servers in parallel.
+
+## Database
+
+Make sure to have docker desktop installed
+From the root, run:
+
+```bash
+docker compose up -d
+```
+
+This will create a postgres container with default credentials
+
+After that run migrations from the server folder:
+
+```bash
+cd apps/server
+```
+
+```bash
+npm run db:migrate
+```
+
+This should generate tables in your postgres database.
+
+## Testing
+
+Run client tests with these commands:
+
+```bash
+cd apps/client
+```
+
+```bash
+npm run test
+```
+
+## Usage
+
+Open the app in the browser at http://localhost:4200
+You will be presented with a registration form.
+You can register with your email and password.
+Validations for email and password apply.
+On successful registration, you should receieve and alert message that you are registered successfuly.
+A new user row in the database should be inserted.
