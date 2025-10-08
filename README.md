@@ -89,4 +89,5 @@ If not, click on the register link and make an account.
 Validations for email and password apply.
 On successful registration, you should receieve and alert message that you are registered successfuly.
 A new user row in the database should be inserted.
-On successful login, you should receive a welcome message.
+On successful login, you should receive a welcome message with your username.
+A json web token should be stored in your browsers local storage.

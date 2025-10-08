@@ -1,8 +1,10 @@
 import bcrypt from "bcrypt";
+import jwt, { type Secret, type SignOptions } from "jsonwebtoken";
 import { db } from "../../db.js";
-import { type UserSchema, userSchema } from "./auth-schema.ts";
-import type { LoginForm } from "./login-schema.ts";
-import type { RegisterForm } from "./register-schema.ts";
+import { type UserSchema, userSchema } from "./auth-schema.js";
+import { jwtConfig } from "./jwt.config.js";
+import type { LoginForm } from "./login-schema.js";
+import type { RegisterForm } from "./register-schema.js";
 
 type RegisterUser = (
 	email: RegisterForm["email"],
@@ -57,5 +59,10 @@ export const verifyUser = async (
 		return;
 	}
 
-	return { email: user.email, id: user.id };
+	const secret: Secret = jwtConfig.secret;
+	const options: SignOptions = { expiresIn: jwtConfig.expiresIn ?? "1h" };
+
+	const token = jwt.sign({ email: user.email, id: user.id }, secret, options);
+
+	return { email: user.email, id: user.id, token };
 };

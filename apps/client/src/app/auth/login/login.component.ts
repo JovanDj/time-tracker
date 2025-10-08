@@ -43,7 +43,7 @@ export class LoginComponent {
     this.#auth.login(this.email().value, this.password().value).subscribe({
       next: (user) => {
         console.log('Logged in:', user);
-        alert(`Welcome`);
+        alert(`Welcome, ${user.email}`);
       },
       error: (err) => {
         console.error('Login failed:', err);

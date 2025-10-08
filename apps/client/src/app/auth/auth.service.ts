@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable, inject } from '@angular/core';
-import { catchError, throwError, type Observable } from 'rxjs';
+import { inject, Injectable } from '@angular/core';
+import { catchError, map, type Observable, tap, throwError } from 'rxjs';
+import { type AuthSchema, authSchema } from './auth.schema';
 
 @Injectable({
   providedIn: 'root',
@@ -23,10 +24,17 @@ export class AuthService {
       );
   }
 
-  login(email: string, password: string): Observable<unknown> {
+  login(email: string, password: string): Observable<AuthSchema> {
     return this.#http
       .post<unknown>('http://localhost:3000/auth/login', { email, password })
       .pipe(
+        map((res: unknown) => {
+          return authSchema.parse(res);
+        }),
+        tap((res: AuthSchema) => {
+          localStorage.setItem('token', res.token);
+          console.log('JWT stored');
+        }),
         catchError((err) => {
           console.error('Login error:', err);
           return throwError(() => err);

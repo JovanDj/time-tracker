@@ -1,7 +1,7 @@
 import express from "express";
-import { registerUser, userExists, verifyUser } from "./auth.service.ts";
-import { validateLoginForm } from "./login-schema.ts";
-import { validateRegisterForm } from "./register-schema.ts";
+import { registerUser, userExists, verifyUser } from "./auth.service.js";
+import { validateLoginForm } from "./login-schema.js";
+import { validateRegisterForm } from "./register-schema.js";
 
 export const authRouter = express.Router();
 
