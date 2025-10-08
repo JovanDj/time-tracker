@@ -10,7 +10,7 @@ app.use(cors());
 app.use(helmet());
 
 app.get("/", (_req, res) => {
-  res.send("API running");
+	res.send("API running");
 });
 
 app.use("/auth", authRouter);

@@ -5,11 +5,12 @@ import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { RouterLink } from '@angular/router';
-import { take, tap } from 'rxjs';
 import { AuthService } from '../auth.service';
 
 @Component({
-  selector: 'app-register',
+  selector: 'app-login',
+  templateUrl: './login.component.html',
+  styleUrl: './login.component.scss',
   imports: [
     ReactiveFormsModule,
     MatFormFieldModule,
@@ -18,16 +19,14 @@ import { AuthService } from '../auth.service';
     MatCardModule,
     RouterLink,
   ],
-  templateUrl: './register.component.html',
-  styleUrl: './register.component.scss',
 })
-export class RegisterComponent {
-  readonly #authService = inject(AuthService);
+export class LoginComponent {
   readonly #fb = inject(FormBuilder);
+  readonly #auth = inject(AuthService);
 
-  protected readonly form = this.#fb.nonNullable.group({
+  protected form = this.#fb.nonNullable.group({
     email: ['', [Validators.required, Validators.email]],
-    password: ['', [Validators.required, Validators.minLength(6)]],
+    password: ['', [Validators.required]],
   });
 
   protected email() {
@@ -39,18 +38,16 @@ export class RegisterComponent {
   }
 
   protected onSubmit() {
-    if (this.form.invalid) {
-      return;
-    }
+    if (this.form.invalid) return;
 
-    this.#authService
-      .register(this.email().value, this.password().value)
-      .pipe(
-        take(1),
-        tap(() => {
-          alert('User successfully registered');
-        }),
-      )
-      .subscribe();
+    this.#auth.login(this.email().value, this.password().value).subscribe({
+      next: (user) => {
+        console.log('Logged in:', user);
+        alert(`Welcome`);
+      },
+      error: (err) => {
+        console.error('Login failed:', err);
+      },
+    });
   }
 }

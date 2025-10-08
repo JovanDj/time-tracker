@@ -83,8 +83,10 @@ npm run test
 ## Usage
 
 Open the app in the browser at http://localhost:4200
-You will be presented with a registration form.
-You can register with your email and password.
+You will be presented with a login form.
+If you already registered before, you can login with email and password
+If not, click on the register link and make an account.
 Validations for email and password apply.
 On successful registration, you should receieve and alert message that you are registered successfuly.
 A new user row in the database should be inserted.
+On successful login, you should receive a welcome message.
