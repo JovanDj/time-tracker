@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { catchError, throwError } from 'rxjs';
+import { catchError, throwError, type Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -8,7 +8,7 @@ import { catchError, throwError } from 'rxjs';
 export class AuthService {
   readonly #http = inject(HttpClient);
 
-  register(email: string, password: string) {
+  register(email: string, password: string): Observable<unknown> {
     return this.#http
       .post<unknown>('http://localhost:3000/auth/register', {
         email,

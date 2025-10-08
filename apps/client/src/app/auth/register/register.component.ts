@@ -37,7 +37,7 @@ export class RegisterComponent {
   }
 
   protected onSubmit() {
-    if (!this.form.valid) {
+    if (this.form.invalid) {
       return;
     }
 
