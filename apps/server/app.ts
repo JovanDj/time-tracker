@@ -21,6 +21,7 @@ app.locals["cookieOptions"] = {
 app.use(
   cors({
     credentials: true,
+    methods: ["GET", "POST", "OPTIONS"],
     origin: "http://localhost:4200",
   })
 );
