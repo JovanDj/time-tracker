@@ -17,16 +17,27 @@ passport.use(
 	new JwtStrategy(options, async (payload, done) => {
 		try {
 			const userRow: unknown = await db("users")
-				.where({ id: payload.id })
+				.join("roles", "users.role_id", "roles.id")
+				.select(
+					"users.id",
+					"users.email",
+					"users.password",
+					"users.created_at",
+					"users.updated_at",
+					"roles.name as role_name",
+				)
+				.where({ "users.id": payload.id })
 				.first();
-
-			if (!userRow) {
-				return done(null, false);
-			}
 
 			const user = userSchema.parse(userRow);
 
-			return done(null, { email: user.email, id: user.id });
+			return done(null, {
+				createdAt: user.created_at,
+				email: user.email,
+				id: user.id,
+				roleName: user.role_name,
+				updatedAt: user.updated_at,
+			});
 		} catch (err) {
 			return done(err, false);
 		}

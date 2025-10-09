@@ -1,6 +1,6 @@
 import type { Knex } from "knex";
 
-export async function up(knex: Knex) {
+export async function up(knex: Knex): Promise<void> {
 	await knex.raw('CREATE EXTENSION IF NOT EXISTS "citext"');
 
 	await knex.schema.createTable("users", (table) => {
@@ -11,6 +11,6 @@ export async function up(knex: Knex) {
 	});
 }
 
-export async function down(knex: Knex) {
+export async function down(knex: Knex): Promise<void> {
 	await knex.schema.dropTableIfExists("users");
 }

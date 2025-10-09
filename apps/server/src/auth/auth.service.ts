@@ -37,7 +37,18 @@ type FindUserByEmail = (
 ) => Promise<unknown | undefined>;
 
 const findUserByEmail: FindUserByEmail = async (email: LoginForm["email"]) => {
-	return db("users").where({ email }).first();
+	return db("users")
+		.join("roles", "users.role_id", "roles.id")
+		.select(
+			"users.id",
+			"users.email",
+			"users.password",
+			"users.created_at",
+			"users.updated_at",
+			"roles.name as role_name",
+		)
+		.where({ email })
+		.first();
 };
 
 export const verifyUser = async (
@@ -62,7 +73,21 @@ export const verifyUser = async (
 	const secret: Secret = jwtConfig.secret;
 	const options: SignOptions = { expiresIn: jwtConfig.expiresIn ?? "1h" };
 
-	const token = jwt.sign({ email: user.email, id: user.id }, secret, options);
+	const token = jwt.sign(
+		{
+			email: user.email,
+			id: user.id,
+		},
+		secret,
+		options,
+	);
 
-	return { email: user.email, id: user.id, token };
+	return {
+		createdAt: user.created_at,
+		email: user.email,
+		id: user.id,
+		roleName: user.role_name,
+		token,
+		updatedAt: user.updated_at,
+	};
 };
