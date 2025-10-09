@@ -1,12 +1,13 @@
 import type { Knex } from "knex";
 
 export async function up(knex: Knex) {
+	await knex.raw('CREATE EXTENSION IF NOT EXISTS "citext"');
+
 	await knex.schema.createTable("users", (table) => {
-		table.increments("id").primary();
-		table.string("email").notNullable().unique();
+		table.specificType("id", "INTEGER GENERATED ALWAYS AS IDENTITY").primary();
+		table.specificType("email", "citext").notNullable().unique();
 		table.string("password").notNullable();
-		table.timestamp("created_at", { useTz: true }).defaultTo(knex.fn.now());
-		table.timestamp("updated_at", { useTz: true }).defaultTo(knex.fn.now());
+		table.timestamps(true, true);
 	});
 }
 

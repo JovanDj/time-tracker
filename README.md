@@ -80,6 +80,13 @@ cd apps/client
 npm run test
 ```
 
+## PG Admin
+
+If you run docker-compose, pg-admin should run on port 5050.
+You can access it via browser on http://localhost:5050 to inspect the database.
+
+Default email is `admin@mail.com`, and password is `admin`.
+
 ## Usage
 
 Open the app in the browser at http://localhost:4200
