@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { catchError, map, type Observable, tap, throwError } from 'rxjs';
+import { catchError, map, type Observable, throwError } from 'rxjs';
 import { type AuthSchema, authSchema } from './auth.schema';
 
 @Injectable({
@@ -31,10 +31,7 @@ export class AuthService {
         map((res: unknown) => {
           return authSchema.parse(res);
         }),
-        tap((res: AuthSchema) => {
-          localStorage.setItem('token', res.token);
-          console.log('JWT stored');
-        }),
+
         catchError((err) => {
           console.error('Login error:', err);
           return throwError(() => err);

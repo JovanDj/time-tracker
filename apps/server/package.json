@@ -2,6 +2,8 @@
 	"author": "",
 	"dependencies": {
 		"bcrypt": "^6.0.0",
+		"cookie": "^1.0.2",
+		"cookie-parser": "^1.4.7",
 		"cors": "^2.8.5",
 		"express": "^5.1.0",
 		"helmet": "^8.1.0",
@@ -21,6 +23,7 @@
 		"@tsconfig/recommended": "^1.0.10",
 		"@tsconfig/strictest": "^2.0.6",
 		"@types/bcrypt": "^6.0.0",
+		"@types/cookie-parser": "^1.4.9",
 		"@types/express": "^5.0.3",
 		"@types/jsonwebtoken": "^9.0.10",
 		"@types/node": "^24.6.2",

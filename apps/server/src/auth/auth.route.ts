@@ -38,16 +38,30 @@ authRouter.post("/login", async (req, res) => {
 	const { email, password } = validation.data;
 
 	try {
-		const user: { email: string; id: number } | undefined = await verifyUser(
-			email,
-			password,
-		);
+		const user:
+			| {
+					createdAt: Date;
+					email: string;
+					id: number;
+					roleName: string;
+					token: string;
+					updatedAt: Date;
+			  }
+			| undefined = await verifyUser(email, password);
 
 		if (!user) {
 			return res.status(401).json({ error: "Invalid email or password" });
 		}
 
-		return res.status(200).json(user);
+		res.cookie("jwt", user.token, req.app.locals["cookieOptions"]);
+
+		return res.status(200).json({
+			createdAt: user.createdAt,
+			email: user.email,
+			id: user.id,
+			roleName: user.roleName,
+			updatedAt: user.updatedAt,
+		});
 	} catch (err) {
 		console.error(err);
 		return res.status(500).json({ error: "Internal server error" });
