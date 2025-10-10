@@ -38,4 +38,20 @@ export class AuthService {
         }),
       );
   }
+
+  me() {
+    return this.#http.get<unknown>('http://localhost:3000/auth/me').pipe(
+      map((res: unknown) => {
+        return authSchema.parse(res);
+      }),
+      catchError((err) => {
+        console.error(err);
+        return throwError(() => err);
+      }),
+    );
+  }
+
+  logout(): Observable<void> {
+    return this.#http.delete<void>('http://localhost:3000/auth/logout', {});
+  }
 }

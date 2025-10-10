@@ -11,19 +11,22 @@ app.use(express.json());
 app.use(cookieParser("secret"));
 
 app.locals["cookieOptions"] = {
-  httpOnly: true,
-  maxAge: 60 * 60 * 1000,
-  sameSite: "strict",
-  secure: process.env["NODE_ENV"] === "production",
-  signed: true,
+	httpOnly: true,
+	maxAge: 60 * 60 * 1000,
+	sameSite: "strict",
+	secure: process.env["NODE_ENV"] === "production",
+	signed: true,
 };
 
 app.use(
-  cors({
-    credentials: true,
-    methods: ["GET", "POST", "OPTIONS"],
-    origin: "http://localhost:4200",
-  })
+	cors({
+		credentials: true,
+		/**
+		 * Does not necessary block requests with other methods
+		 */
+		methods: ["GET", "POST", "HEAD", "OPTIONS", "DELETE"],
+		origin: "http://localhost:4200",
+	}),
 );
 
 /**
@@ -58,24 +61,24 @@ app.use(
  * X-XSS-Protection: Legacy header that tries to mitigate XSS attacks, but makes things worse, so Helmet disables it
  */
 app.use(
-  helmet({
-    contentSecurityPolicy: {
-      reportOnly: true,
-    },
-  })
+	helmet({
+		contentSecurityPolicy: {
+			reportOnly: true,
+		},
+	}),
 );
 app.use(passport.initialize());
 
 app.get("/", (_req, res) => {
-  res.send("API running");
+	res.send("API running");
 });
 
 app.use("/auth", authRouter);
 
 authRouter.get(
-  "/me",
-  passport.authenticate("jwt", { session: false }),
-  (req, res) => {
-    res.json(req.user);
-  }
+	"/me",
+	passport.authenticate("jwt", { session: false }),
+	(req, res) => {
+		res.json(req.user);
+	},
 );

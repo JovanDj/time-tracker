@@ -1,10 +1,11 @@
-import { Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
+import { catchError, take, tap, throwError } from 'rxjs';
 import { AuthService } from '../auth.service';
 
 @Component({
@@ -19,10 +20,12 @@ import { AuthService } from '../auth.service';
     MatCardModule,
     RouterLink,
   ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LoginComponent {
   readonly #fb = inject(FormBuilder);
   readonly #auth = inject(AuthService);
+  readonly #router = inject(Router);
 
   protected form = this.#fb.nonNullable.group({
     email: ['', [Validators.required, Validators.email]],
@@ -38,15 +41,22 @@ export class LoginComponent {
   }
 
   protected onSubmit() {
-    if (this.form.invalid) return;
+    if (this.form.invalid) {
+      return;
+    }
 
-    this.#auth.login(this.email().value, this.password().value).subscribe({
-      next: (user) => {
-        console.log('Logged in:', { user });
-      },
-      error: (err) => {
-        console.error('Login failed:', err);
-      },
-    });
+    this.#auth
+      .login(this.email().value, this.password().value)
+      .pipe(
+        take(1),
+        tap(() => {
+          return this.#router.navigate(['/profile']);
+        }),
+        catchError((err) => {
+          console.error('Login failed:', err);
+          return throwError(() => err);
+        }),
+      )
+      .subscribe();
   }
 }

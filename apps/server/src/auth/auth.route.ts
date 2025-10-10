@@ -67,3 +67,8 @@ authRouter.post("/login", async (req, res) => {
 		return res.status(500).json({ error: "Internal server error" });
 	}
 });
+
+authRouter.delete("/logout", (req, res) => {
+	res.clearCookie("jwt", req.app.locals["cookieOptions"]);
+	res.sendStatus(204);
+});
