@@ -11,7 +11,7 @@ export class AuthService {
 
   register(email: string, password: string): Observable<unknown> {
     return this.#http
-      .post<unknown>('http://localhost:3000/auth/register', {
+      .post<unknown>('/api/auth/register', {
         email,
         password,
       })
@@ -26,7 +26,7 @@ export class AuthService {
 
   login(email: string, password: string): Observable<AuthSchema> {
     return this.#http
-      .post<unknown>('http://localhost:3000/auth/login', { email, password })
+      .post<unknown>('/api/auth/login', { email, password })
       .pipe(
         map((res: unknown) => {
           return authSchema.parse(res);
@@ -40,7 +40,7 @@ export class AuthService {
   }
 
   me() {
-    return this.#http.get<unknown>('http://localhost:3000/auth/me').pipe(
+    return this.#http.get<unknown>('/api/auth/me').pipe(
       map((res: unknown) => {
         return authSchema.parse(res);
       }),
@@ -52,6 +52,6 @@ export class AuthService {
   }
 
   logout(): Observable<void> {
-    return this.#http.delete<void>('http://localhost:3000/auth/logout', {});
+    return this.#http.delete<void>('/api/auth/logout', {});
   }
 }
