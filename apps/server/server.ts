@@ -1,7 +1,8 @@
 import { app } from "./app.js";
+import { env } from "./env.schema.ts";
 
-const { port = "3000" } = process.env;
+const { PORT } = env;
 
-app.listen(port, () => {
-	console.log(`Server running on http://localhost:${port}`);
+app.listen(PORT, () => {
+	console.log(`Server running on http://localhost:${PORT}`);
 });

@@ -38,7 +38,7 @@
 	"name": "server",
 	"scripts": {
 		"db:migrate": "cross-env NODE_OPTIONS='--import tsx/esm' knex migrate:latest",
-		"dev": "tsx watch server.ts",
+		"dev": "tsx watch --env-file=.env server.ts",
 		"lint": "biome check --write",
 		"start": "tsx server.ts"
 	},

@@ -2,19 +2,20 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import express from "express";
 import helmet from "helmet";
+import { env } from "./env.schema.ts";
 import { authRouter } from "./src/auth/auth.route.js";
 import passport from "./src/auth/jwt.strategy.js";
 
 export const app = express();
 
 app.use(express.json());
-app.use(cookieParser("secret"));
+app.use(cookieParser(env.SESSION_SECRET));
 
 app.locals["cookieOptions"] = {
 	httpOnly: true,
 	maxAge: 60 * 60 * 1000,
 	sameSite: "strict",
-	secure: process.env["NODE_ENV"] === "production",
+	secure: env.NODE_ENV === "production",
 	signed: true,
 };
 
@@ -24,8 +25,8 @@ app.use(
 		/**
 		 * Does not necessary block requests with other methods
 		 */
-		methods: ["GET", "POST", "HEAD", "OPTIONS", "DELETE"],
-		origin: "http://localhost:4200",
+		methods: ["GET", "HEAD", "OPTIONS", "DELETE"],
+		origin: env.FRONTEND_ORIGIN,
 	}),
 );
 

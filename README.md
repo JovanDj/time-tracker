@@ -18,6 +18,37 @@ npm install
 
 Running this in root will install dependencies for both frontend and backend apps.
 
+## Environment configuration
+
+The server requires environment variables for database and app configuration.
+A template file with default values is provided.
+
+1. Copy the example file
+
+```bash
+cp apps/server/.env.example apps/server/.env
+```
+
+This creates a working .env file with safe default values.
+
+2. (Optional) Adjust configuration
+
+Edit apps/server/.env to match your local or production setup:
+
+PORT — server port
+
+POSTGRES\_\* — database credentials
+
+PGADMIN\_\* — pgAdmin credentials
+
+JWT_SECRET, SESSION_SECRET — generate secure random strings for production
+
+3. Run the stack
+   docker compose up -d
+
+The app will start using the values from .env.
+You can change them anytime and restart the containers to apply new settings.
+
 ## Run backend (Express 5)
 
 ```bash

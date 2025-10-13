@@ -1,9 +1,10 @@
 import type { Secret, SignOptions } from "jsonwebtoken";
+import { env } from "../../env.schema.ts";
 
 export const jwtConfig: {
 	secret: Secret;
 	expiresIn: SignOptions["expiresIn"];
 } = {
 	expiresIn: "1h",
-	secret: process.env["JWT_SECRET"] ?? "dev-secret",
+	secret: env.JWT_SECRET,
 };

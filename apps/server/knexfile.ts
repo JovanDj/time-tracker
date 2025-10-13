@@ -1,10 +1,18 @@
 import type { Knex } from "knex";
+import { env } from "./env.schema.ts";
 
 const config: Record<string, Knex.Config> = {
 	development: {
 		client: "pg",
-		connection: "postgres://postgres:postgres@localhost:5432/time_tracking_db",
+		connection: {
+			database: env.POSTGRES_DB,
+			host: env.POSTGRES_HOST,
+			password: env.POSTGRES_PASSWORD,
+			port: env.POSTGRES_PORT,
+			user: env.POSTGRES_USER,
+		},
 		migrations: { directory: "./migrations", extension: "ts" },
+		useNullAsDefault: true,
 	},
 };
 
