@@ -43,7 +43,7 @@
 		"dev": "tsx watch server.ts",
 		"lint": "biome check --write",
 		"start": "tsx server.ts",
-		"test": "tsx --test"
+		"test": "tsx --test --test-concurrency=1"
 	},
 	"type": "module",
 	"version": "1.0.0"
