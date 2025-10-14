@@ -29,7 +29,9 @@
 		"@types/node": "^24.6.2",
 		"@types/passport-jwt": "^4.0.1",
 		"@types/pg": "^8.15.5",
+		"@types/supertest": "^6.0.3",
 		"cross-env": "^10.1.0",
+		"supertest": "^7.1.4",
 		"tsx": "^4.20.6",
 		"typescript": "^5.9.3"
 	},
@@ -38,9 +40,10 @@
 	"name": "server",
 	"scripts": {
 		"db:migrate": "cross-env NODE_OPTIONS='--import tsx/esm' knex migrate:latest",
-		"dev": "tsx watch --env-file=.env server.ts",
+		"dev": "tsx watch server.ts",
 		"lint": "biome check --write",
-		"start": "tsx server.ts"
+		"start": "tsx server.ts",
+		"test": "tsx --test"
 	},
 	"type": "module",
 	"version": "1.0.0"
