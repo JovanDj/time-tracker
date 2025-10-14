@@ -3,9 +3,9 @@ import {
 	Strategy as JwtStrategy,
 	type StrategyOptionsWithoutRequest,
 } from "passport-jwt";
-import { db } from "../../db.js";
-import { userSchema } from "./auth-schema.js";
-import { jwtConfig } from "./jwt.config.ts";
+import { authService } from "../index.js";
+import { userSchema } from "./../schema/auth.schema.js";
+import { jwtConfig } from "./jwt.config.js";
 
 const options: StrategyOptionsWithoutRequest = {
 	jwtFromRequest: (req) => {
@@ -17,19 +17,7 @@ const options: StrategyOptionsWithoutRequest = {
 passport.use(
 	new JwtStrategy(options, async (payload, done) => {
 		try {
-			const userRow: unknown = await db("users")
-				.join("roles", "users.role_id", "roles.id")
-				.select(
-					"users.id",
-					"users.email",
-					"users.password",
-					"users.created_at",
-					"users.updated_at",
-					"roles.name as role_name",
-				)
-				.where({ "users.id": payload.id })
-				.first();
-
+			const userRow: unknown = await authService.findByEmail(payload.email);
 			const user = userSchema.parse(userRow);
 
 			return done(null, {

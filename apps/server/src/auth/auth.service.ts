@@ -1,93 +1,83 @@
-import bcrypt from "bcrypt";
 import jwt, { type Secret, type SignOptions } from "jsonwebtoken";
-import { db } from "../../db.js";
-import { type UserSchema, userSchema } from "./auth-schema.js";
-import { jwtConfig } from "./jwt.config.js";
-import type { LoginForm } from "./login-schema.js";
-import type { RegisterForm } from "./register-schema.js";
+import type { Hashing } from "../../lib/hashing/hashing.js";
+import type { AuthRepository } from "./auth.repository.js";
+import type { AuthenticatedUser } from "./authenticated-user.js";
+import { jwtConfig } from "./jwt/jwt.config.js";
+import { type UserSchema, userSchema } from "./schema/auth.schema.js";
+import type { LoginForm } from "./schema/login-schema.js";
+import type { RegisterForm } from "./schema/register-schema.js";
 
-type RegisterUser = (
-	email: RegisterForm["email"],
-	password: RegisterForm["password"],
-) => Promise<unknown>;
+export class AuthService {
+  readonly #authRepository: AuthRepository;
+  readonly #hashing: Hashing;
 
-export const registerUser: RegisterUser = async (
-	email: RegisterForm["email"],
-	password: RegisterForm["password"],
-) => {
-	const passwordHash: string = await bcrypt.hash(password, 10);
+  constructor(authRepository: AuthRepository, hashing: Hashing) {
+    this.#authRepository = authRepository;
+    this.#hashing = hashing;
+  }
 
-	const [userRow]: unknown[] = await db("users")
-		.insert({ email, password: passwordHash })
-		.returning(["id", "email"]);
+  async registerUser(
+    email: RegisterForm["email"],
+    password: RegisterForm["password"]
+  ): Promise<unknown> {
+    const passwordHash: string = await this.#hashing.hash(password);
 
-	return userRow;
-};
+    const userRow: unknown = await this.#authRepository.insertUser(
+      email,
+      passwordHash
+    );
 
-type UserExists = (email: RegisterForm["email"]) => Promise<boolean>;
+    return userRow;
+  }
 
-export const userExists: UserExists = async (email: RegisterForm["email"]) => {
-	const existingUser: unknown = await db("users").where({ email }).first();
+  async userExists(email: RegisterForm["email"]): Promise<boolean> {
+    const existingUser: unknown = await this.#authRepository.userExists(email);
 
-	return !!existingUser;
-};
+    return !!existingUser;
+  }
 
-type FindUserByEmail = (
-	email: LoginForm["email"],
-) => Promise<unknown | undefined>;
+  async verifyUser(
+    email: LoginForm["email"],
+    password: LoginForm["password"]
+  ): Promise<AuthenticatedUser | undefined> {
+    const userRow = await this.#authRepository.findByEmail(email);
 
-const findUserByEmail: FindUserByEmail = async (email: LoginForm["email"]) => {
-	return db("users")
-		.join("roles", "users.role_id", "roles.id")
-		.select(
-			"users.id",
-			"users.email",
-			"users.password",
-			"users.created_at",
-			"users.updated_at",
-			"roles.name as role_name",
-		)
-		.where({ email })
-		.first();
-};
+    if (!userRow) {
+      console.error("User not found.");
+      return;
+    }
 
-export const verifyUser = async (
-	email: LoginForm["email"],
-	password: LoginForm["password"],
-) => {
-	const userRow = await findUserByEmail(email);
+    const user: UserSchema = userSchema.parse(userRow);
+    const match: boolean = await this.#hashing.compare(password, user.password);
 
-	if (!userRow) {
-		console.error("User not found.");
-		return;
-	}
+    if (!match) {
+      console.error("Password hash mismatch.");
+      return;
+    }
 
-	const user: UserSchema = userSchema.parse(userRow);
-	const match: boolean = await bcrypt.compare(password, user.password);
+    const secret: Secret = jwtConfig.secret;
+    const options: SignOptions = { expiresIn: jwtConfig.expiresIn ?? "1h" };
 
-	if (!match) {
-		console.error("Password hash mismatch.");
-		return;
-	}
+    const token = jwt.sign(
+      {
+        email: user.email,
+        id: user.id,
+      },
+      secret,
+      options
+    );
 
-	const secret: Secret = jwtConfig.secret;
-	const options: SignOptions = { expiresIn: jwtConfig.expiresIn ?? "1h" };
+    return {
+      createdAt: user.created_at,
+      email: user.email,
+      id: user.id,
+      roleName: user.role_name,
+      token,
+      updatedAt: user.updated_at,
+    };
+  }
 
-	const token = jwt.sign(
-		{
-			email: user.email,
-			id: user.id,
-		},
-		secret,
-		options,
-	);
-
-	return {
-		createdAt: user.created_at,
-		email: user.email,
-		id: user.id,
-		roleName: user.role_name,
-		token,
-		updatedAt: user.updated_at,
-	};
-};
+  async findByEmail(email: LoginForm["email"]) {
+    return this.#authRepository.findByEmail(email);
+  }
+}

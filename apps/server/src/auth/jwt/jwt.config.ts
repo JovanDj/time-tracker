@@ -1,5 +1,5 @@
 import type { Secret, SignOptions } from "jsonwebtoken";
-import { env } from "../../env.schema.ts";
+import { env } from "../../../env.schema.js";
 
 export const jwtConfig: {
 	secret: Secret;

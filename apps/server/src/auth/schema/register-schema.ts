@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { authSchema } from "./auth-schema.ts";
+import { authSchema } from "./auth.schema.js";
 
 export const registerFormSchema = authSchema.extend({
 	password: z.string().min(6, "Password must be at least 6 characters"),

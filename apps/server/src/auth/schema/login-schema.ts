@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { authSchema, formatResult } from "./auth-schema.ts";
+import { authSchema, formatResult } from "./auth.schema.js";
 
 export const loginFormSchema = authSchema.extend({
 	password: z.string().min(1, "Password is required"),

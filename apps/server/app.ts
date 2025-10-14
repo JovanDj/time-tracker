@@ -2,9 +2,9 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import express from "express";
 import helmet from "helmet";
-import { env } from "./env.schema.ts";
+import { env } from "./env.schema.js";
 import { authRouter } from "./src/auth/auth.route.js";
-import passport from "./src/auth/jwt.strategy.js";
+import passport from "./src/auth/jwt/jwt.strategy.js";
 
 export const app = express();
 

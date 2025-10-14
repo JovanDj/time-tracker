@@ -1,5 +1,5 @@
 import { app } from "./app.js";
-import { env } from "./env.schema.ts";
+import { env } from "./env.schema.js";
 
 const { PORT } = env;
 

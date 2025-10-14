@@ -1,8 +1,7 @@
 import { after, beforeEach, describe, it, type TestContext } from "node:test";
-import bcrypt from "bcrypt";
 import request from "supertest";
-import { app } from "../app.ts";
-import { db } from "../db.ts";
+import { app } from "../app.js";
+import { db } from "../db.js";
 
 describe("Logging in", () => {
 	after(async () => {
@@ -16,10 +15,9 @@ describe("Logging in", () => {
 	it("returns 200 and sets cookie when credentials are valid", async (t: TestContext) => {
 		t.plan(4);
 
-		await db("users").insert({
-			email: "valid@mail.com",
-			password: await bcrypt.hash("correctpass", 10),
-		});
+		await request(app)
+			.post("/auth/register")
+			.send({ email: "valid@mail.com", password: "correctpass" });
 
 		const res = await request(app)
 			.post("/auth/login")
