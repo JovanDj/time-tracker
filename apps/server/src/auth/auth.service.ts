@@ -1,3 +1,4 @@
+import crypto from "node:crypto";
 import jwt, { type Secret, type SignOptions } from "jsonwebtoken";
 import type { Hashing } from "../../lib/hashing/hashing.js";
 import type { AuthRepository } from "./auth.repository.js";
@@ -6,7 +7,6 @@ import { jwtConfig } from "./jwt/jwt.config.js";
 import { type UserSchema, userSchema } from "./schema/auth.schema.js";
 import type { LoginForm } from "./schema/login-schema.js";
 import type { RegisterForm } from "./schema/register-schema.js";
-
 export class AuthService {
 	readonly #authRepository: AuthRepository;
 	readonly #hashing: Hashing;
@@ -79,5 +79,28 @@ export class AuthService {
 
 	async findByEmail(email: LoginForm["email"]) {
 		return this.#authRepository.findByEmail(email);
+	}
+
+	async upsertPasswordReset(
+		userId: number,
+		token: string,
+		expiresAt: Date,
+	): Promise<void> {
+		return this.#authRepository.upsertPasswordReset(userId, token, expiresAt);
+	}
+
+	generateForgotPasswordToken(): string {
+		return crypto.randomBytes(32).toString("hex");
+	}
+
+	async resetPassword(token: string, newPassword: string): Promise<void> {
+		const reset = await this.#authRepository.findResetByToken(token);
+		if (!reset || new Date(reset.expires_at) < new Date()) {
+			throw new Error("Invalid or expired token");
+		}
+
+		const hash = await this.#hashing.hash(newPassword);
+		await this.#authRepository.updateUserPassword(reset.user_id, hash);
+		await this.#authRepository.deleteResetByToken(token);
 	}
 }

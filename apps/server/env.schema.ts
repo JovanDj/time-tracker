@@ -17,6 +17,11 @@ const EnvSchema = z.object({
 	POSTGRES_PORT: z.coerce.number().int().default(5432),
 	POSTGRES_USER: z.string().default("postgres"),
 	SESSION_SECRET: z.string().min(16).default("session-secret"),
+	SMTP_HOST: z.string(),
+	SMTP_PASS: z.string(),
+	SMTP_PORT: z.coerce.number().int().min(1).max(65535).default(1025),
+	SMTP_SECURE: z.stringbool().default(false),
+	SMTP_USER: z.string(),
 });
 
 export type Env = z.output<typeof EnvSchema>;

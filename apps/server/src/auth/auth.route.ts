@@ -11,3 +11,11 @@ authRouter.delete(
 	passport.authenticate("jwt", { session: false }),
 	authController.delete.bind(authController),
 );
+authRouter.post(
+	"/forgot-password",
+	authController.forgotPassword.bind(authController),
+);
+authRouter.post(
+	"/reset-password",
+	authController.resetPassword.bind(authController),
+);

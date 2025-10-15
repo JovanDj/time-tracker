@@ -1,5 +1,9 @@
 import type { Knex } from "knex";
 import type { AuthRepository } from "./auth.repository.js";
+import {
+	type PasswordResetRow,
+	passwordResetRowSchema,
+} from "./schema/reset-password-schema.ts";
 
 export class KnexAuthRepository implements AuthRepository {
 	readonly #knex: Knex;
@@ -32,5 +36,52 @@ export class KnexAuthRepository implements AuthRepository {
 
 	async userExists(email: string): Promise<boolean> {
 		return !!(await this.#knex("users").where({ email }).first());
+	}
+
+	async upsertPasswordReset(
+		userId: number,
+		token: string,
+		expiresAt: Date,
+	): Promise<void> {
+		const existing = await this.#knex("password_resets")
+			.where({ user_id: userId })
+			.first();
+
+		if (!existing) {
+			return this.#knex("password_resets").insert({
+				expires_at: expiresAt,
+				token,
+				user_id: userId,
+			});
+		}
+
+		return this.#knex("password_resets")
+			.where({ user_id: userId })
+			.update({ expires_at: expiresAt, token });
+	}
+
+	async findResetByToken(token: string): Promise<PasswordResetRow | undefined> {
+		const row: unknown = await this.#knex("password_resets")
+			.where({ token })
+			.first();
+
+		if (!row) {
+			return;
+		}
+
+		return passwordResetRowSchema.parse(row);
+	}
+
+	async deleteResetByToken(token: string): Promise<void> {
+		this.#knex("password_resets").where({ token }).delete();
+	}
+
+	async updateUserPassword(
+		userId: number,
+		passwordHash: string,
+	): Promise<void> {
+		this.#knex("users")
+			.where({ id: userId })
+			.update({ password: passwordHash, updated_at: this.#knex.fn.now() });
 	}
 }
