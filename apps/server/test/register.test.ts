@@ -1,16 +1,10 @@
-import { after, beforeEach, describe, it, type TestContext } from "node:test";
+import { describe, it, type TestContext } from "node:test";
 import request from "supertest";
 import { app } from "../app.js";
-import { db } from "../db.js";
+import { setupTestDatabase } from "./setup.ts";
 
-describe("Registering", () => {
-	beforeEach(async () => {
-		await db("users").truncate();
-	});
-
-	after(async () => {
-		await db.destroy();
-	});
+describe("Registering", { concurrency: true }, () => {
+	setupTestDatabase();
 
 	it("returns 201 and user JSON when data is valid", async (t: TestContext) => {
 		t.plan(3);

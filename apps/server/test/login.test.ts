@@ -1,16 +1,10 @@
-import { after, beforeEach, describe, it, type TestContext } from "node:test";
+import { describe, it, type TestContext } from "node:test";
 import request from "supertest";
 import { app } from "../app.js";
-import { db } from "../db.js";
+import { setupTestDatabase } from "./setup.ts";
 
-describe("Logging in", () => {
-	beforeEach(async () => {
-		await db("users").truncate();
-	});
-
-	after(async () => {
-		await db.destroy();
-	});
+describe("Logging in", { concurrency: true }, () => {
+	setupTestDatabase();
 
 	it("returns 200 and sets cookie when credentials are valid", async (t: TestContext) => {
 		t.plan(4);

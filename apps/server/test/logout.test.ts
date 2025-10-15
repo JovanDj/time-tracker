@@ -1,16 +1,10 @@
-import { after, beforeEach, describe, it, type TestContext } from "node:test";
+import { describe, it, type TestContext } from "node:test";
 import request from "supertest";
 import { app } from "../app.js";
-import { db } from "../db.js";
+import { setupTestDatabase } from "./setup.ts";
 
-describe("Logging out", () => {
-	after(async () => {
-		await db.destroy();
-	});
-
-	beforeEach(async () => {
-		await db("users").truncate();
-	});
+describe("Logging out", { concurrency: true }, () => {
+	setupTestDatabase();
 
 	it("returns 204 and clears jwt cookie when user is authenticated", async (t: TestContext) => {
 		t.plan(5);

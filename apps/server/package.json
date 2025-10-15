@@ -31,6 +31,7 @@
 		"@types/pg": "^8.15.5",
 		"@types/supertest": "^6.0.3",
 		"cross-env": "^10.1.0",
+		"pg-transactional-tests": "^1.2.0",
 		"supertest": "^7.1.4",
 		"tsx": "^4.20.6",
 		"typescript": "^5.9.3"
@@ -43,7 +44,7 @@
 		"dev": "tsx watch server.ts",
 		"lint": "biome check --write",
 		"start": "tsx server.ts",
-		"test": "tsx --test --test-concurrency=1"
+		"test": "tsx --test"
 	},
 	"type": "module",
 	"version": "1.0.0"
