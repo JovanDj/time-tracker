@@ -108,7 +108,7 @@ export class AuthController {
 
 			await this.#authService.upsertPasswordReset(user.id, token, expiresAt);
 
-			const resetUrl = new URL("/reset", env.FRONTEND_ORIGIN);
+			const resetUrl = new URL("/reset-password", env.FRONTEND_ORIGIN);
 			resetUrl.searchParams.set("token", token);
 
 			const resetLink = resetUrl.href;

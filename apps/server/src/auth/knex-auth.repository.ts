@@ -82,16 +82,16 @@ export class KnexAuthRepository implements AuthRepository {
 	async #deleteResetByToken(
 		token: string,
 		connection: Knex = this.#knex,
-	): Promise<void> {
-		connection("password_resets").where({ token }).delete();
+	): Promise<number> {
+		return connection("password_resets").where({ token }).delete();
 	}
 
 	async #updateUserPassword(
 		userId: number,
 		passwordHash: string,
 		connection: Knex = this.#knex,
-	): Promise<void> {
-		connection("users")
+	): Promise<number> {
+		return connection("users")
 			.where({ id: userId })
 			.update({ password: passwordHash, updated_at: connection.fn.now() });
 	}

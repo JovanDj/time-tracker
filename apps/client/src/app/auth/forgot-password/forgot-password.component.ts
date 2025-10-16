@@ -1,45 +1,45 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  FormBuilder,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
+import { MatCard } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { Router, RouterLink } from '@angular/router';
-import { take, tap } from 'rxjs';
+import { RouterLink } from '@angular/router';
+import { catchError, take, tap } from 'rxjs';
 import { AuthService } from '../auth.service';
 
 @Component({
-  selector: 'app-register',
+  selector: 'app-forgot-password',
   imports: [
     ReactiveFormsModule,
     MatFormFieldModule,
+    FormsModule,
     MatInputModule,
     MatButtonModule,
-    MatCardModule,
+    MatCard,
     RouterLink,
   ],
-  templateUrl: './register.component.html',
-  styleUrl: './register.component.scss',
+  templateUrl: './forgot-password.component.html',
+  styleUrl: './forgot-password.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class RegisterComponent {
-  readonly #authService = inject(AuthService);
+export class ForgotPasswordComponent {
   readonly #fb = inject(FormBuilder);
+  readonly #authService = inject(AuthService);
   readonly #snack = inject(MatSnackBar);
-  readonly #router = inject(Router);
 
   protected readonly form = this.#fb.nonNullable.group({
     email: ['', [Validators.required, Validators.email]],
-    password: ['', [Validators.required, Validators.minLength(6)]],
   });
 
   protected email() {
     return this.form.controls.email;
-  }
-
-  protected password() {
-    return this.form.controls.password;
   }
 
   protected onSubmit() {
@@ -48,15 +48,18 @@ export class RegisterComponent {
     }
 
     this.#authService
-      .register(this.email().value, this.password().value)
+      .forgotPassword(this.email().value)
       .pipe(
         take(1),
         tap(() => {
-          this.#router.navigate(['/login']);
-
-          this.#snack.open('User successfuly registered', '', {
+          this.#snack.open('If account exists, email sent', '', {
             duration: 3000,
           });
+        }),
+        catchError((err) => {
+          this.#snack.open('Something went wrong', '', { duration: 3000 });
+
+          return err;
         }),
       )
       .subscribe();

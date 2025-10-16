@@ -4,7 +4,8 @@ export async function up(knex: Knex): Promise<void> {
 	await knex.schema.createTable("password_resets", (table) => {
 		table.specificType("id", "INTEGER GENERATED ALWAYS AS IDENTITY").primary();
 		table
-			.bigInteger("user_id")
+			.integer("user_id")
+			.unsigned()
 			.notNullable()
 			.references("id")
 			.inTable("users")
