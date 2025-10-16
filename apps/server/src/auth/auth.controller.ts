@@ -1,14 +1,16 @@
 import type express from "express";
-import z from "zod";
 import { env } from "../../env.schema.ts";
 import type { Mailer } from "../../lib/mailer/mailer.ts";
 import type { AuthService } from "./auth.service.js";
 import type { AuthenticatedUser } from "./authenticated-user.js";
-import { formatResult } from "./schema/auth.schema.ts";
-import { forgotPasswordSchema } from "./schema/forgot-password.schema.ts";
-import { validateLoginForm } from "./schema/login-schema.js";
-import { validateRegisterForm } from "./schema/register-schema.js";
-import { resetPasswordSchema } from "./schema/reset-password-schema.ts";
+import {
+	forgotPasswordSchema,
+	loginFormSchema,
+	registerFormSchema,
+	resetPasswordSchema,
+	type UserSchema,
+	validate,
+} from "./schema/index.js";
 
 export class AuthController {
 	readonly #authService: AuthService;
@@ -20,7 +22,7 @@ export class AuthController {
 	}
 
 	async register(req: express.Request, res: express.Response) {
-		const validation = validateRegisterForm(req.body);
+		const validation = validate(registerFormSchema, req.body);
 
 		if (!validation.success || !validation.data) {
 			return res.status(400).json({ errors: validation.errors });
@@ -46,7 +48,7 @@ export class AuthController {
 	}
 
 	async login(req: express.Request, res: express.Response) {
-		const validation = validateLoginForm(req.body);
+		const validation = validate(loginFormSchema, req.body);
 
 		if (!validation.success || !validation.data) {
 			return res.status(400).json({ errors: validation.errors });
@@ -83,7 +85,7 @@ export class AuthController {
 	}
 
 	async forgotPassword(req: express.Request, res: express.Response) {
-		const parsed = formatResult(forgotPasswordSchema.safeParse(req.body));
+		const parsed = validate(forgotPasswordSchema, req.body);
 
 		if (!parsed.success || !parsed.data) {
 			return res.status(400).json({ errors: parsed.errors });
@@ -92,18 +94,17 @@ export class AuthController {
 		const { email } = parsed.data;
 
 		try {
-			const userRow = await this.#authService.findByEmail(email);
+			const user: UserSchema | undefined =
+				await this.#authService.findByEmail(email);
 
-			if (!userRow) {
+			if (!user) {
 				return res
 					.status(200)
 					.json({ message: "If account exists, email sent." });
 			}
 
-			const user = z.object({ id: z.int() }).parse(userRow);
-
-			const token = this.#authService.generateForgotPasswordToken();
-			const expiresAt = new Date(Date.now() + 1000 * 60 * 30);
+			const token: string = this.#authService.generateForgotPasswordToken();
+			const expiresAt: Date = new Date(Date.now() + 1000 * 60 * 30);
 
 			await this.#authService.upsertPasswordReset(user.id, token, expiresAt);
 
@@ -130,7 +131,7 @@ export class AuthController {
 	}
 
 	async resetPassword(req: express.Request, res: express.Response) {
-		const parsed = formatResult(resetPasswordSchema.safeParse(req.body));
+		const parsed = validate(resetPasswordSchema, req.body);
 
 		if (!parsed.success || !parsed.data) {
 			return res.status(400).json({ errors: parsed.errors });
@@ -141,10 +142,11 @@ export class AuthController {
 		try {
 			await this.#authService.resetPassword(token, password);
 			return res.status(200).json({ message: "Password reset successful" });
-		} catch (err) {
+		} catch (err: unknown) {
 			if (err instanceof Error && /expired/i.test(err.message)) {
 				return res.status(400).json({ error: "Invalid or expired token" });
 			}
+
 			console.error(err);
 			return res.status(500).json({ error: "Internal server error" });
 		}

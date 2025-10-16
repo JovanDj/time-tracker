@@ -1,9 +1,10 @@
 import type { Knex } from "knex";
 import type { AuthRepository } from "./auth.repository.js";
+import { type UserSchema, userSchema } from "./schema/index.ts";
 import {
 	type PasswordResetRow,
 	passwordResetRowSchema,
-} from "./schema/reset-password-schema.ts";
+} from "./schema/reset-password.schema.ts";
 
 export class KnexAuthRepository implements AuthRepository {
 	readonly #knex: Knex;
@@ -12,8 +13,8 @@ export class KnexAuthRepository implements AuthRepository {
 		this.#knex = knex;
 	}
 
-	async findByEmail(email: string): Promise<unknown> {
-		return this.#knex("users")
+	async findByEmail(email: string): Promise<UserSchema | undefined> {
+		const row: unknown = await this.#knex("users")
 			.join("roles", "users.role_id", "roles.id")
 			.select(
 				"users.id",
@@ -25,6 +26,12 @@ export class KnexAuthRepository implements AuthRepository {
 			)
 			.where({ email })
 			.first();
+
+		if (!row) {
+			return;
+		}
+
+		return userSchema.parse(row);
 	}
 
 	async insertUser(email: string, passwordHash: string): Promise<unknown> {
@@ -43,7 +50,7 @@ export class KnexAuthRepository implements AuthRepository {
 		token: string,
 		expiresAt: Date,
 	): Promise<void> {
-		const existing = await this.#knex("password_resets")
+		const existing: unknown = await this.#knex("password_resets")
 			.where({ user_id: userId })
 			.first();
 

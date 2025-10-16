@@ -4,9 +4,13 @@ import type { Hashing } from "../../lib/hashing/hashing.js";
 import type { AuthRepository } from "./auth.repository.js";
 import type { AuthenticatedUser } from "./authenticated-user.js";
 import { jwtConfig } from "./jwt/jwt.config.js";
-import { type UserSchema, userSchema } from "./schema/auth.schema.js";
-import type { LoginForm } from "./schema/login-schema.js";
-import type { RegisterForm } from "./schema/register-schema.js";
+import type {
+	LoginForm,
+	RegisterForm,
+	ResetPasswordSchema,
+	UserSchema,
+} from "./schema/index.ts";
+
 export class AuthService {
 	readonly #authRepository: AuthRepository;
 	readonly #hashing: Hashing;
@@ -40,14 +44,14 @@ export class AuthService {
 		email: LoginForm["email"],
 		password: LoginForm["password"],
 	): Promise<AuthenticatedUser | undefined> {
-		const userRow = await this.#authRepository.findByEmail(email);
+		const user: UserSchema | undefined =
+			await this.#authRepository.findByEmail(email);
 
-		if (!userRow) {
+		if (!user) {
 			console.error("User not found.");
 			return;
 		}
 
-		const user: UserSchema = userSchema.parse(userRow);
 		const match: boolean = await this.#hashing.compare(password, user.password);
 
 		if (!match) {
@@ -77,12 +81,14 @@ export class AuthService {
 		};
 	}
 
-	async findByEmail(email: LoginForm["email"]) {
+	async findByEmail(
+		email: LoginForm["email"],
+	): Promise<UserSchema | undefined> {
 		return this.#authRepository.findByEmail(email);
 	}
 
 	async upsertPasswordReset(
-		userId: number,
+		userId: UserSchema["id"],
 		token: string,
 		expiresAt: Date,
 	): Promise<void> {
@@ -93,8 +99,12 @@ export class AuthService {
 		return crypto.randomBytes(32).toString("hex");
 	}
 
-	async resetPassword(token: string, newPassword: string): Promise<void> {
+	async resetPassword(
+		token: ResetPasswordSchema["token"],
+		newPassword: ResetPasswordSchema["password"],
+	): Promise<void> {
 		const reset = await this.#authRepository.findResetByToken(token);
+
 		if (!reset || new Date(reset.expires_at) < new Date()) {
 			throw new Error("Invalid or expired token");
 		}

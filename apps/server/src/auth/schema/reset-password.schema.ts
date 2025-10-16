@@ -4,6 +4,7 @@ export const resetPasswordSchema = z.object({
 	password: z.string().min(8),
 	token: z.string().min(1),
 });
+export type ResetPasswordSchema = z.output<typeof resetPasswordSchema>;
 
 export const passwordResetRowSchema = z.object({
 	expires_at: z.iso.datetime({ offset: true }),

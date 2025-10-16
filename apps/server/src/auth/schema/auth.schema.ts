@@ -27,3 +27,7 @@ export const formatResult = <T>(result: z.ZodSafeParseResult<T>) => {
 		success: true,
 	};
 };
+
+export const validate = <T extends z.ZodTypeAny>(schema: T, body: unknown) => {
+	return formatResult(schema.safeParse(body));
+};

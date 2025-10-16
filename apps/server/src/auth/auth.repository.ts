@@ -1,7 +1,8 @@
-import type { PasswordResetRow } from "./schema/reset-password-schema.ts";
+import type { UserSchema } from "./schema/auth.schema.ts";
+import type { PasswordResetRow } from "./schema/reset-password.schema.ts";
 
 export interface AuthRepository {
-	findByEmail(email: string): Promise<unknown | undefined>;
+	findByEmail(email: string): Promise<UserSchema | undefined>;
 	insertUser(email: string, password: string): Promise<unknown>;
 	userExists(email: string): Promise<boolean>;
 	upsertPasswordReset(
