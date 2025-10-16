@@ -100,7 +100,6 @@ export class AuthService {
 		}
 
 		const hash = await this.#hashing.hash(newPassword);
-		await this.#authRepository.updateUserPassword(reset.user_id, hash);
-		await this.#authRepository.deleteResetByToken(token);
+		return this.#authRepository.resetPassword(reset.user_id, token, hash);
 	}
 }

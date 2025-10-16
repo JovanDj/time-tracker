@@ -10,6 +10,9 @@ export interface AuthRepository {
 		expiresAt: Date,
 	): Promise<void>;
 	findResetByToken(token: string): Promise<PasswordResetRow | undefined>;
-	deleteResetByToken(token: string): Promise<void>;
-	updateUserPassword(userId: number, passwordHash: string): Promise<void>;
+	resetPassword(
+		userId: number,
+		token: string,
+		passwordHash: string,
+	): Promise<void>;
 }

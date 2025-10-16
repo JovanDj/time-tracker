@@ -72,16 +72,33 @@ export class KnexAuthRepository implements AuthRepository {
 		return passwordResetRowSchema.parse(row);
 	}
 
-	async deleteResetByToken(token: string): Promise<void> {
-		this.#knex("password_resets").where({ token }).delete();
+	async #deleteResetByToken(
+		token: string,
+		connection: Knex = this.#knex,
+	): Promise<void> {
+		connection("password_resets").where({ token }).delete();
 	}
 
-	async updateUserPassword(
+	async #updateUserPassword(
 		userId: number,
 		passwordHash: string,
+		connection: Knex = this.#knex,
 	): Promise<void> {
-		this.#knex("users")
+		connection("users")
 			.where({ id: userId })
-			.update({ password: passwordHash, updated_at: this.#knex.fn.now() });
+			.update({ password: passwordHash, updated_at: connection.fn.now() });
+	}
+
+	async resetPassword(
+		userId: number,
+		token: string,
+		hash: string,
+	): Promise<void> {
+		await this.#knex.transaction(async (trx) => {
+			return Promise.all([
+				this.#updateUserPassword(userId, hash, trx),
+				this.#deleteResetByToken(token, trx),
+			]);
+		});
 	}
 }
