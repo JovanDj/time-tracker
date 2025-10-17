@@ -8,6 +8,7 @@ import {
 	registerFormSchema,
 	resetPasswordSchema,
 	type UserSchema,
+	updateProfileSchema,
 	validate,
 } from "./schema/index.js";
 
@@ -66,8 +67,10 @@ export class AuthController {
 
 			res.cookie("jwt", token, req.app.locals["cookieOptions"]);
 
+			const { password: _, ...safeUser } = user;
+
 			return res.status(200).json({
-				...user,
+				...safeUser,
 			});
 		} catch (err) {
 			console.error(err);
@@ -145,6 +148,31 @@ export class AuthController {
 
 			console.error(err);
 			return res.status(500).json({ error: "Internal server error" });
+		}
+	}
+
+	async updateProfile(req: express.Request, res: express.Response) {
+		const { user } = req;
+
+		if (!user) {
+			return res.status(401).json({ error: "Unauthorized" });
+		}
+
+		const parsed = validate(updateProfileSchema, req.body);
+
+		if (!parsed.success || !parsed.data) {
+			return res.status(400).json({ errors: parsed.errors });
+		}
+		const { firstName, lastName } = parsed.data;
+
+		try {
+			const { password: _, ...safeUser }: UserSchema =
+				await this.#authService.updateProfile(user.email, firstName, lastName);
+
+			return res.status(200).json({ ...safeUser });
+		} catch (err) {
+			console.error(err);
+			return res.status(500).json({ error: "Failed to update user" });
 		}
 	}
 }

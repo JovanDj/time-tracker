@@ -1,6 +1,12 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { catchError, map, type Observable, throwError } from 'rxjs';
+import {
+  BehaviorSubject,
+  catchError,
+  map,
+  type Observable,
+  throwError,
+} from 'rxjs';
 import { type AuthSchema, authSchema } from './auth.schema';
 
 @Injectable({
@@ -8,6 +14,22 @@ import { type AuthSchema, authSchema } from './auth.schema';
 })
 export class AuthService {
   readonly #http = inject(HttpClient);
+
+  readonly #store = new BehaviorSubject<AuthSchema>({
+    id: 0,
+    createdAt: '',
+    email: '',
+    firstName: '',
+    lastName: '',
+    updatedAt: '',
+    roleName: '',
+  });
+
+  readonly #userState = this.#store.asObservable();
+
+  userState() {
+    return this.#userState;
+  }
 
   register(email: string, password: string): Observable<unknown> {
     return this.#http
@@ -29,7 +51,10 @@ export class AuthService {
       .post<unknown>('/api/auth/login', { email, password })
       .pipe(
         map((res: unknown) => {
-          return authSchema.parse(res);
+          const auth = authSchema.parse(res);
+          this.#store.next({ ...auth });
+
+          return auth;
         }),
 
         catchError((err) => {
@@ -39,10 +64,13 @@ export class AuthService {
       );
   }
 
-  me() {
+  me(): Observable<AuthSchema> {
     return this.#http.get<unknown>('/api/auth/me').pipe(
       map((res: unknown) => {
-        return authSchema.parse(res);
+        const auth = authSchema.parse(res);
+        this.#store.next({ ...auth });
+
+        return auth;
       }),
       catchError((err) => {
         console.error(err);
@@ -64,5 +92,21 @@ export class AuthService {
       token,
       password,
     });
+  }
+
+  updateProfile(
+    firstName: AuthSchema['firstName'],
+    lastName: AuthSchema['lastName'],
+  ) {
+    return this.#http
+      .patch<AuthSchema>('/api/auth/me', { firstName, lastName })
+      .pipe(
+        map((res) => {
+          const auth = authSchema.parse(res);
+          this.#store.next({ ...auth });
+
+          return auth;
+        }),
+      );
   }
 }

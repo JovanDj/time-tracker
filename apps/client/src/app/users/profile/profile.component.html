@@ -29,4 +29,29 @@
       <button mat-button color="primary">Edit</button>
     </mat-card-actions>
   </mat-card>
-</ng-container>
+
+  <mat-card class="full">
+    <form [formGroup]="form" (ngSubmit)="onUpdateUser()">
+      <mat-form-field appearance="fill" class="full">
+        <mat-label>First name</mat-label>
+        <input matInput formControlName="firstName" />
+      </mat-form-field>
+
+      <mat-form-field appearance="fill" class="full">
+        <mat-label>Last name</mat-label>
+        <input matInput formControlName="lastName" />
+      </mat-form-field>
+
+      <div>
+        <button
+          mat-flat-button
+          color="primary"
+          type="submit"
+          [disabled]="form.invalid"
+        >
+          Save
+        </button>
+      </div>
+    </form>
+  </mat-card></ng-container
+>

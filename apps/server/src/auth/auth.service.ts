@@ -46,7 +46,7 @@ export class AuthService {
 		const user: UserSchema | undefined =
 			await this.#authRepository.findByEmail(email);
 
-		if (!user) {
+		if (!user || !user.password) {
 			console.error("User not found.");
 			return;
 		}
@@ -111,5 +111,23 @@ export class AuthService {
 			options,
 		);
 		return token;
+	}
+
+	async updateProfile(
+		email: UserSchema["email"],
+		firstName: NonNullable<UserSchema["firstName"]>,
+		lastName: NonNullable<UserSchema["lastName"]>,
+	): Promise<UserSchema> {
+		const user = await this.#authRepository.updateProfile(
+			email,
+			firstName,
+			lastName,
+		);
+
+		if (!user) {
+			throw new Error("User not found.");
+		}
+
+		return user;
 	}
 }

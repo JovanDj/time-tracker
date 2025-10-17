@@ -9,14 +9,21 @@ export const userSchema = authSchema.extend({
 	firstName: z.string().nullable(),
 	id: z.int(),
 	lastName: z.string().nullable(),
-	password: z.string(),
+	password: z.string().optional(),
 	roleName: z.string(),
 	updatedAt: z.date(),
 });
 
+export const updateProfileSchema = userSchema
+	.pick({ firstName: true, lastName: true })
+	.extend({
+		firstName: z.string(),
+		lastName: z.string(),
+	});
+
 export type UserSchema = z.output<typeof userSchema>;
 
-export const formatResult = <T>(result: z.ZodSafeParseResult<T>) => {
+const formatResult = <T>(result: z.ZodSafeParseResult<T>) => {
 	if (!result.success) {
 		return {
 			errors: z.treeifyError(result.error),

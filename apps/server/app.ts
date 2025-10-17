@@ -75,11 +75,3 @@ app.get("/", (_req, res) => {
 });
 
 app.use("/auth", authRouter);
-
-authRouter.get(
-	"/me",
-	passport.authenticate("jwt", { session: false }),
-	(req, res) => {
-		res.json(req.user);
-	},
-);

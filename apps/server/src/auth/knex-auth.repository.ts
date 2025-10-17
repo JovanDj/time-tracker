@@ -13,8 +13,11 @@ export class KnexAuthRepository implements AuthRepository {
 		this.#knex = knex;
 	}
 
-	async findByEmail(email: string): Promise<UserSchema | undefined> {
-		const row: unknown = await this.#knex("users")
+	async findByEmail(
+		email: string,
+		trx: Knex = this.#knex,
+	): Promise<UserSchema | undefined> {
+		const row: unknown = await trx("users")
 			.join("roles", "users.role_id", "roles.id")
 			.select(
 				"users.id",
@@ -23,7 +26,7 @@ export class KnexAuthRepository implements AuthRepository {
 				"users.created_at AS createdAt",
 				"users.updated_at AS updatedAt",
 				"users.first_name AS firstName",
-				"users.last_name AS lastName ",
+				"users.last_name AS lastName",
 				"roles.name AS roleName",
 			)
 			.where({ email })
@@ -108,6 +111,40 @@ export class KnexAuthRepository implements AuthRepository {
 				this.#updateUserPassword(userId, hash, trx),
 				this.#deleteResetByToken(token, trx),
 			]);
+		});
+	}
+
+	async updateProfile(
+		email: string,
+		firstName: string,
+		lastName: string,
+	): Promise<UserSchema | undefined> {
+		return this.#knex.transaction(async (trx) => {
+			await this.#knex("users").where({ email }).update({
+				first_name: firstName,
+				last_name: lastName,
+				updated_at: this.#knex.fn.now(),
+			});
+
+			const row: unknown = await trx("users")
+				.join("roles", "users.role_id", "roles.id")
+				.select(
+					"users.id",
+					"users.email",
+					"users.created_at AS createdAt",
+					"users.updated_at AS updatedAt",
+					"users.first_name AS firstName",
+					"users.last_name AS lastName",
+					"roles.name AS roleName",
+				)
+				.where({ email })
+				.first();
+
+			if (!row) {
+				return;
+			}
+
+			return userSchema.parse(row);
 		});
 	}
 }

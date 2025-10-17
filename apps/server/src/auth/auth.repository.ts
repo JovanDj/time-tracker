@@ -16,4 +16,9 @@ export interface AuthRepository {
 		token: string,
 		passwordHash: string,
 	): Promise<void>;
+	updateProfile(
+		email: string,
+		firstName: string,
+		lastName: string,
+	): Promise<UserSchema | undefined>;
 }
