@@ -4,7 +4,7 @@ import {
 	type StrategyOptionsWithoutRequest,
 } from "passport-jwt";
 import { authService } from "../index.js";
-import { userSchema } from "./../schema/auth.schema.js";
+import type { UserSchema } from "../schema/index.ts";
 import { jwtConfig } from "./jwt.config.js";
 
 const options: StrategyOptionsWithoutRequest = {
@@ -17,15 +17,16 @@ const options: StrategyOptionsWithoutRequest = {
 passport.use(
 	new JwtStrategy(options, async (payload, done) => {
 		try {
-			const userRow: unknown = await authService.findByEmail(payload.email);
-			const user = userSchema.parse(userRow);
+			const user: UserSchema | undefined = await authService.findByEmail(
+				payload.email,
+			);
+
+			if (!user) {
+				throw new Error("User not found.");
+			}
 
 			return done(null, {
-				createdAt: user.created_at,
-				email: user.email,
-				id: user.id,
-				roleName: user.role_name,
-				updatedAt: user.updated_at,
+				...user,
 			});
 		} catch (err) {
 			return done(err, false);

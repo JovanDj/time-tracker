@@ -1,3 +1,4 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -6,7 +7,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router, RouterLink } from '@angular/router';
-import { take, tap } from 'rxjs';
+import { catchError, take, tap, throwError } from 'rxjs';
 import { AuthService } from '../auth.service';
 
 @Component({
@@ -57,6 +58,15 @@ export class RegisterComponent {
           this.#snack.open('User successfuly registered', '', {
             duration: 3000,
           });
+        }),
+        catchError((err: unknown) => {
+          if (err instanceof HttpErrorResponse) {
+            this.#snack.open(err.error.error, '', {
+              duration: 3000,
+            });
+          }
+
+          return throwError(() => err);
         }),
       )
       .subscribe();

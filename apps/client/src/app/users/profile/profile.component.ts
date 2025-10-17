@@ -1,16 +1,26 @@
 import { AsyncPipe, DatePipe, NgIf } from '@angular/common';
+import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { Router } from '@angular/router';
-import { type Observable, take, tap } from 'rxjs';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { Router, RouterLink } from '@angular/router';
+import { catchError, type Observable, take, tap, throwError } from 'rxjs';
 import type { AuthSchema } from '../../auth/auth.schema';
 import { AuthService } from '../../auth/auth.service';
 
 @Component({
   selector: 'app-profile',
-  imports: [AsyncPipe, NgIf, MatButtonModule, MatCardModule, DatePipe],
+  imports: [
+    AsyncPipe,
+    NgIf,
+    MatButtonModule,
+    MatCardModule,
+    DatePipe,
+    MatToolbarModule,
+    RouterLink,
+  ],
   templateUrl: './profile.component.html',
   styleUrl: './profile.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -30,6 +40,14 @@ export class ProfileComponent {
         tap(() => {
           this.#snack.open('Successfully logged out', '', { duration: 3000 });
           return this.#router.navigate(['/login']);
+        }),
+
+        catchError((err: unknown) => {
+          if (err instanceof HttpErrorResponse) {
+            this.#snack.open(err.message, '', { duration: 3000 });
+          }
+
+          return throwError(() => err);
         }),
       )
       .subscribe();

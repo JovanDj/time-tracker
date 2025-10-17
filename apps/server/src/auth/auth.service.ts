@@ -2,7 +2,6 @@ import crypto from "node:crypto";
 import jwt, { type Secret, type SignOptions } from "jsonwebtoken";
 import type { Hashing } from "../../lib/hashing/hashing.js";
 import type { AuthRepository } from "./auth.repository.js";
-import type { AuthenticatedUser } from "./authenticated-user.js";
 import { jwtConfig } from "./jwt/jwt.config.js";
 import type {
 	LoginForm,
@@ -43,7 +42,7 @@ export class AuthService {
 	async verifyUser(
 		email: LoginForm["email"],
 		password: LoginForm["password"],
-	): Promise<AuthenticatedUser | undefined> {
+	): Promise<{ user: UserSchema; token: string } | undefined> {
 		const user: UserSchema | undefined =
 			await this.#authRepository.findByEmail(email);
 
@@ -59,25 +58,11 @@ export class AuthService {
 			return;
 		}
 
-		const secret: Secret = jwtConfig.secret;
-		const options: SignOptions = { expiresIn: jwtConfig.expiresIn ?? "1h" };
-
-		const token = jwt.sign(
-			{
-				email: user.email,
-				id: user.id,
-			},
-			secret,
-			options,
-		);
+		const token: string = this.#signJwtToken(user);
 
 		return {
-			createdAt: user.created_at,
-			email: user.email,
-			id: user.id,
-			roleName: user.role_name,
 			token,
-			updatedAt: user.updated_at,
+			user,
 		};
 	}
 
@@ -111,5 +96,20 @@ export class AuthService {
 
 		const hash = await this.#hashing.hash(newPassword);
 		return this.#authRepository.resetPassword(reset.user_id, token, hash);
+	}
+
+	#signJwtToken(user: UserSchema): string {
+		const secret: Secret = jwtConfig.secret;
+		const options: SignOptions = { expiresIn: jwtConfig.expiresIn ?? "1h" };
+
+		const token: string = jwt.sign(
+			{
+				email: user.email,
+				id: user.id,
+			},
+			secret,
+			options,
+		);
+		return token;
 	}
 }

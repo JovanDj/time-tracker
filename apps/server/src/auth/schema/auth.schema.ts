@@ -5,11 +5,13 @@ export const authSchema = z.object({
 });
 
 export const userSchema = authSchema.extend({
-	created_at: z.date(),
+	createdAt: z.date(),
+	firstName: z.string().nullable(),
 	id: z.int(),
+	lastName: z.string().nullable(),
 	password: z.string(),
-	role_name: z.string(),
-	updated_at: z.date(),
+	roleName: z.string(),
+	updatedAt: z.date(),
 });
 
 export type UserSchema = z.output<typeof userSchema>;

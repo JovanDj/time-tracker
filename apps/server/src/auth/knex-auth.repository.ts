@@ -20,9 +20,11 @@ export class KnexAuthRepository implements AuthRepository {
 				"users.id",
 				"users.email",
 				"users.password",
-				"users.created_at",
-				"users.updated_at",
-				"roles.name as role_name",
+				"users.created_at AS createdAt",
+				"users.updated_at AS updatedAt",
+				"users.first_name AS firstName",
+				"users.last_name AS lastName ",
+				"roles.name AS roleName",
 			)
 			.where({ email })
 			.first();

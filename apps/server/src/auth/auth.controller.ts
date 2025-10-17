@@ -2,7 +2,6 @@ import type express from "express";
 import { env } from "../../env.schema.ts";
 import type { Mailer } from "../../lib/mailer/mailer.ts";
 import type { AuthService } from "./auth.service.js";
-import type { AuthenticatedUser } from "./authenticated-user.js";
 import {
 	forgotPasswordSchema,
 	loginFormSchema,
@@ -57,21 +56,18 @@ export class AuthController {
 		const { email, password } = validation.data;
 
 		try {
-			const user: AuthenticatedUser | undefined =
-				await this.#authService.verifyUser(email, password);
+			const verified = await this.#authService.verifyUser(email, password);
 
-			if (!user) {
+			if (!verified) {
 				return res.status(401).json({ error: "Invalid email or password" });
 			}
 
-			res.cookie("jwt", user.token, req.app.locals["cookieOptions"]);
+			const { user, token } = verified;
+
+			res.cookie("jwt", token, req.app.locals["cookieOptions"]);
 
 			return res.status(200).json({
-				createdAt: user.createdAt,
-				email: user.email,
-				id: user.id,
-				roleName: user.roleName,
-				updatedAt: user.updatedAt,
+				...user,
 			});
 		} catch (err) {
 			console.error(err);

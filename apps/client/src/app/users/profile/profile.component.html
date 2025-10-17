@@ -1,18 +1,32 @@
 <ng-container *ngIf="vm$ | async as vm">
-  <mat-card class="profile-card" class="full">
+  <mat-toolbar color="primary" class="navbar">
+    <span class="brand">Time Tracker</span>
+
+    <span class="spacer"></span>
+
+    <span class="user-info">
+      <a routerLink="/profile" class="email">{{ vm.email }}</a>
+      <button mat-button color="warn" (click)="onLogout()">Logout</button>
+    </span>
+  </mat-toolbar>
+
+  <mat-card class="profile-card full">
     <mat-card-header>
       <mat-card-title>User #{{ vm.id }}</mat-card-title>
       <mat-card-subtitle>{{ vm.email }}</mat-card-subtitle>
     </mat-card-header>
 
     <mat-card-content>
-      <p>Joined: {{ vm.createdAt | date }}</p>
-      <p>Role: {{ vm.roleName }}</p>
+      <p><strong>First name:</strong> {{ vm.firstName ?? "Not set" }}</p>
+      <p><strong>Last name:</strong> {{ vm.lastName ?? "Not set" }}</p>
+
+      <p><strong>Role:</strong> {{ vm.roleName }}</p>
+      <p><strong>Joined:</strong> {{ vm.createdAt | date: "medium" }}</p>
+      <p><strong>Last updated:</strong> {{ vm.updatedAt | date: "medium" }}</p>
     </mat-card-content>
 
     <mat-card-actions>
       <button mat-button color="primary">Edit</button>
-      <button (click)="onLogout()" mat-button color="warn">Logout</button>
     </mat-card-actions>
   </mat-card>
 </ng-container>
