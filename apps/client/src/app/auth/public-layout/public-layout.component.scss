@@ -1,0 +1,25 @@
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+}
+.brand {
+  font-weight: 600;
+}
+
+.brand-btn {
+  font-size: 1.25rem;
+  font-weight: 600;
+  text-transform: none;
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  mat-icon {
+    font-size: 24px;
+  }
+}
+
+.spacer {
+  flex: 1 1 auto;
+}

@@ -53,7 +53,7 @@ export class RegisterComponent {
       .pipe(
         take(1),
         tap(() => {
-          this.#router.navigate(['/login']);
+          this.#router.navigate(['/profile']);
 
           this.#snack.open('User successfuly registered', '', {
             duration: 3000,
