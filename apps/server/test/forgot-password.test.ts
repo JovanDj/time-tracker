@@ -3,7 +3,7 @@ import request from "supertest";
 import { app } from "../app.ts";
 import { setupTestDatabase } from "./setup.ts";
 
-describe("POST /auth/forgot-password", { concurrency: true }, () => {
+describe("Forgot password", { concurrency: true }, () => {
 	setupTestDatabase();
 
 	it("returns 200 even if the email does not exist", async (t: TestContext) => {

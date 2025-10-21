@@ -35,10 +35,8 @@ export class AuthController {
 				return res.status(409).json({ error: "Email already exists" });
 			}
 
-			const user: unknown = await this.#authService.registerUser(
-				email,
-				password,
-			);
+			const user: Pick<UserSchema, "email" | "id"> =
+				await this.#authService.registerUser(email, password);
 
 			return res.status(201).json(user);
 		} catch (err) {

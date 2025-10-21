@@ -22,21 +22,14 @@ export class AuthService {
 	async registerUser(
 		email: RegisterForm["email"],
 		password: RegisterForm["password"],
-	): Promise<unknown> {
+	): Promise<Pick<UserSchema, "email" | "id">> {
 		const passwordHash: string = await this.#hashing.hash(password);
 
-		const userRow: unknown = await this.#authRepository.insertUser(
-			email,
-			passwordHash,
-		);
-
-		return userRow;
+		return this.#authRepository.insertUser(email, passwordHash);
 	}
 
 	async userExists(email: RegisterForm["email"]): Promise<boolean> {
-		const existingUser: unknown = await this.#authRepository.userExists(email);
-
-		return !!existingUser;
+		return this.#authRepository.userExists(email);
 	}
 
 	async verifyUser(

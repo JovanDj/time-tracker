@@ -3,7 +3,10 @@ import type { PasswordResetRow } from "./schema/reset-password.schema.ts";
 
 export interface AuthRepository {
 	findByEmail(email: string): Promise<UserSchema | undefined>;
-	insertUser(email: string, password: string): Promise<unknown>;
+	insertUser(
+		email: string,
+		password: string,
+	): Promise<Pick<UserSchema, "email" | "id">>;
 	userExists(email: string): Promise<boolean>;
 	upsertPasswordReset(
 		userId: number,

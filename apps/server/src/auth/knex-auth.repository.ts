@@ -15,9 +15,9 @@ export class KnexAuthRepository implements AuthRepository {
 
 	async findByEmail(
 		email: string,
-		trx: Knex = this.#knex,
+		connection: Knex = this.#knex,
 	): Promise<UserSchema | undefined> {
-		const row: unknown = await trx("users")
+		const row: unknown = await connection("users")
 			.join("roles", "users.role_id", "roles.id")
 			.select(
 				"users.id",
@@ -39,11 +39,15 @@ export class KnexAuthRepository implements AuthRepository {
 		return userSchema.parse(row);
 	}
 
-	async insertUser(email: string, passwordHash: string): Promise<unknown> {
-		const [userRow] = await this.#knex("users")
+	async insertUser(
+		email: string,
+		passwordHash: string,
+	): Promise<Pick<UserSchema, "id" | "email">> {
+		const [userRow]: unknown[] = await this.#knex("users")
 			.insert({ email, password: passwordHash })
 			.returning(["id", "email"]);
-		return userRow;
+
+		return userSchema.pick({ email: true, id: true }).parse(userRow);
 	}
 
 	async userExists(email: string): Promise<boolean> {
@@ -55,21 +59,23 @@ export class KnexAuthRepository implements AuthRepository {
 		token: string,
 		expiresAt: Date,
 	): Promise<void> {
-		const existing: unknown = await this.#knex("password_resets")
-			.where({ user_id: userId })
-			.first();
+		await this.#knex.transaction(async (trx) => {
+			const existing: unknown = await trx("password_resets")
+				.where({ user_id: userId })
+				.first();
 
-		if (!existing) {
-			return this.#knex("password_resets").insert({
-				expires_at: expiresAt,
-				token,
-				user_id: userId,
-			});
-		}
+			if (!existing) {
+				await trx("password_resets").insert({
+					expires_at: expiresAt,
+					token,
+					user_id: userId,
+				});
+			}
 
-		return this.#knex("password_resets")
-			.where({ user_id: userId })
-			.update({ expires_at: expiresAt, token });
+			await trx("password_resets")
+				.where({ user_id: userId })
+				.update({ expires_at: expiresAt, token });
+		});
 	}
 
 	async findResetByToken(token: string): Promise<PasswordResetRow | undefined> {
