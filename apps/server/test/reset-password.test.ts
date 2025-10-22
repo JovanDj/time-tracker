@@ -3,7 +3,7 @@ import request from "supertest";
 import { app } from "../app.js";
 import { setupTestDatabase } from "./setup.js";
 
-describe("Reset password", { concurrency: true }, () => {
+describe("Reset password", () => {
 	setupTestDatabase();
 
 	it("returns 400 when body is missing", async (t: TestContext) => {

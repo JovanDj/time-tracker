@@ -7,8 +7,9 @@ export class NodeMailer implements Mailer {
 	constructor(mailer: nodemailer.Transporter) {
 		this.#mailer = mailer;
 	}
-	send({ to, subject, html }: MailerOptions): Promise<unknown> {
-		return this.#mailer.sendMail({
+
+	async send({ to, subject, html }: MailerOptions): Promise<void> {
+		await this.#mailer.sendMail({
 			from: "no-reply@timetracker.local",
 			html,
 			subject,

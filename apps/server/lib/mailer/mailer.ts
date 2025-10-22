@@ -5,5 +5,5 @@ export type MailerOptions = {
 };
 
 export interface Mailer {
-	send(mailerOptions: MailerOptions): Promise<unknown>;
+	send(mailerOptions: MailerOptions): Promise<void>;
 }

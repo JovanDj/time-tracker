@@ -1,14 +1,13 @@
 import { describe, it, type TestContext } from "node:test";
 import request from "supertest";
 import { app } from "../app.js";
-import { db } from "../db.ts";
 import { setupTestDatabase } from "./setup.ts";
 
-describe("Registering", { concurrency: true }, () => {
+describe("Registering", () => {
 	setupTestDatabase();
 
-	it("returns 201 and user JSON when data is valid", async (t: TestContext) => {
-		t.plan(3);
+	it("automatically logs in the user after registration", async (t: TestContext) => {
+		t.plan(4);
 
 		const res = await request(app)
 			.post("/auth/register")
@@ -18,6 +17,7 @@ describe("Registering", { concurrency: true }, () => {
 		t.assert.deepStrictEqual(res.statusCode, 201);
 		t.assert.deepStrictEqual(res.body.email, "new@mail.com");
 		t.assert.deepStrictEqual(res.type, "application/json");
+		t.assert.match(res.get("set-cookie")?.[0] ?? "", /jwt/);
 	});
 
 	it("returns 400 when body shape is invalid", async (t: TestContext) => {
@@ -78,8 +78,5 @@ describe("Registering", { concurrency: true }, () => {
 		t.assert.deepStrictEqual(res.body, { error: "Email already exists" });
 		t.assert.deepStrictEqual(res.type, "application/json");
 		t.assert.deepStrictEqual(res.clientError, true);
-
-		// Required, user stays in db after test
-		db("users").truncate();
 	});
 });

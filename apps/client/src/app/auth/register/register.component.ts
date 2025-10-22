@@ -43,7 +43,7 @@ export class RegisterComponent {
     return this.form.controls.password;
   }
 
-  protected onSubmit() {
+  protected onSubmit(): void {
     if (this.form.invalid) {
       return;
     }
@@ -55,7 +55,7 @@ export class RegisterComponent {
         tap(() => {
           this.#router.navigate(['/profile']);
 
-          this.#snack.open('User successfuly registered', '', {
+          this.#snack.open('User successfuly registered and logged in', '', {
             duration: 3000,
           });
         }),

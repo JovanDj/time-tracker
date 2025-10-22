@@ -51,7 +51,7 @@ export class AuthService {
 			return;
 		}
 
-		const token: string = this.#signJwtToken(user);
+		const token: string = this.signJwtToken({ email: user.email, id: user.id });
 
 		return {
 			token,
@@ -91,7 +91,7 @@ export class AuthService {
 		return this.#authRepository.resetPassword(reset.user_id, token, hash);
 	}
 
-	#signJwtToken(user: UserSchema): string {
+	signJwtToken(user: Pick<UserSchema, "id" | "email">): string {
 		const secret: Secret = jwtConfig.secret;
 		const options: SignOptions = { expiresIn: jwtConfig.expiresIn ?? "1h" };
 

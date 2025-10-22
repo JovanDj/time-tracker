@@ -3,7 +3,7 @@ import request from "supertest";
 import { app } from "../app.js";
 import { setupTestDatabase } from "./setup.ts";
 
-describe("Logging in", { concurrency: true }, () => {
+describe("Logging in", () => {
 	setupTestDatabase();
 
 	it("returns 200 and sets cookie when credentials are valid", async (t: TestContext) => {

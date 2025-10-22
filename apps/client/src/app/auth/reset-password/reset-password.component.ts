@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import {
   FormBuilder,
+  type FormControl,
   FormsModule,
   ReactiveFormsModule,
   Validators,
@@ -40,11 +41,11 @@ export class ResetPasswordComponent {
     password: ['', [Validators.required, Validators.minLength(6)]],
   });
 
-  protected password() {
+  protected password(): FormControl<string> {
     return this.form.controls.password;
   }
 
-  async onSubmit() {
+  protected onSubmit(): void {
     const token = this.#route.snapshot.queryParamMap.get('token');
 
     if (this.form.invalid || !token) {

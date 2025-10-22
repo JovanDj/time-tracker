@@ -3,7 +3,7 @@ import request from "supertest";
 import { app } from "../app.js";
 import { setupTestDatabase } from "./setup.ts";
 
-describe("Logging out", { concurrency: true }, () => {
+describe("Logging out", () => {
 	setupTestDatabase();
 
 	it("returns 204 and clears jwt cookie when user is authenticated", async (t: TestContext) => {
