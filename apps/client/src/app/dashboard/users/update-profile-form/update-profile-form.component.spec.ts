@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { type ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { UpdateProfileFormComponent } from './update-profile-form.component';
 
@@ -8,13 +8,12 @@ describe('UpdateProfileFormComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [UpdateProfileFormComponent]
-    })
-    .compileComponents();
+      imports: [UpdateProfileFormComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(UpdateProfileFormComponent);
     component = fixture.componentInstance;
-    fixture.detectChanges();
+    fixture.autoDetectChanges();
   });
 
   it('should create', () => {

@@ -14,7 +14,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { catchError, tap, throwError } from 'rxjs';
-import { AuthService } from '../../auth/auth.service';
+import { AuthService } from '../../../auth/auth.service';
 
 @Component({
   selector: 'app-update-profile-form',

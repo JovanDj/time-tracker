@@ -1,6 +1,7 @@
 import type { Routes } from '@angular/router';
 import { authGuard } from './auth/auth.guard';
 import { PublicLayoutComponent } from './auth/public-layout/public-layout.component';
+import { DashboardComponent } from './dashboard/dashboard.component';
 
 export const routes: Routes = [
   {
@@ -42,14 +43,21 @@ export const routes: Routes = [
       },
     ],
   },
-
   {
-    path: 'profile',
+    path: 'dashboard',
+    component: DashboardComponent,
     canActivate: [authGuard],
-    loadComponent: () =>
-      import('./users/profile/profile.component').then(
-        (m) => m.ProfileComponent,
-      ),
+    children: [
+      {
+        path: 'profile',
+        loadComponent: () =>
+          import('./dashboard/users/profile/profile.component').then(
+            (m) => m.ProfileComponent,
+          ),
+      },
+      { path: '**', redirectTo: '' },
+    ],
   },
+
   { path: '**', redirectTo: '' },
 ];

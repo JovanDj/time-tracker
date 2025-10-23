@@ -1,0 +1,15 @@
+<ng-container *ngIf="vm$ | async as vm">
+  <mat-toolbar color="primary" class="navbar">
+    <span class="brand">Time Tracker</span>
+
+    <span class="spacer"></span>
+
+    <span class="user-info">
+      <a [routerLink]="['/dashboard', 'profile']" class="email">{{
+        vm.email
+      }}</a>
+      <button mat-button color="warn" (click)="onLogout()">Logout</button>
+    </span>
+  </mat-toolbar>
+</ng-container>
+<router-outlet></router-outlet>
