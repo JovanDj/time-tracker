@@ -12,7 +12,17 @@
 
   <mat-card class="profile-card full">
     <mat-card-header>
-      <mat-card-title>User #{{ vm.id }}</mat-card-title>
+      <mat-card-title
+        >User #{{ vm.id }}
+        <button
+          mat-icon-button
+          matButton="elevated"
+          color="primary"
+          (click)="onEditProfile()"
+        >
+          <mat-icon>edit</mat-icon>
+        </button></mat-card-title
+      >
       <mat-card-subtitle>{{ vm.email }}</mat-card-subtitle>
     </mat-card-header>
 
@@ -25,29 +35,4 @@
       <p><strong>Last updated:</strong> {{ vm.updatedAt | date: "medium" }}</p>
     </mat-card-content>
   </mat-card>
-
-  <mat-card class="full">
-    <form [formGroup]="form" (ngSubmit)="onUpdateUser()">
-      <mat-form-field appearance="fill" class="full">
-        <mat-label>First name</mat-label>
-        <input matInput formControlName="firstName" />
-      </mat-form-field>
-
-      <mat-form-field appearance="fill" class="full">
-        <mat-label>Last name</mat-label>
-        <input matInput formControlName="lastName" />
-      </mat-form-field>
-
-      <div>
-        <button
-          mat-flat-button
-          color="primary"
-          type="submit"
-          [disabled]="form.invalid"
-        >
-          Save
-        </button>
-      </div>
-    </form>
-  </mat-card></ng-container
->
+</ng-container>
