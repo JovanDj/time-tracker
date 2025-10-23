@@ -84,6 +84,10 @@ export class UpdateProfileFormComponent implements OnInit {
       .pipe(
         takeUntilDestroyed(this.#destroyRef),
         tap((user) => {
+          if (!user) {
+            return;
+          }
+
           this.form.patchValue({
             firstName: user.firstName ?? '',
             lastName: user.lastName ?? '',

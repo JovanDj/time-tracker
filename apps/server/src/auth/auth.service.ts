@@ -123,4 +123,8 @@ export class AuthService {
 
 		return user;
 	}
+
+	async deleteAccount(userId: UserSchema["id"]) {
+		await this.#authRepository.deleteUser(userId);
+	}
 }

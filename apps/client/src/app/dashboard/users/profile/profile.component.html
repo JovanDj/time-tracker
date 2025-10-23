@@ -3,12 +3,7 @@
     <mat-card-header>
       <mat-card-title
         >User #{{ vm.id }}
-        <button
-          mat-icon-button
-          matButton="elevated"
-          color="primary"
-          (click)="onEditProfile()"
-        >
+        <button matMiniFab (click)="onEditProfile()">
           <mat-icon>edit</mat-icon>
         </button></mat-card-title
       >
@@ -16,12 +11,34 @@
     </mat-card-header>
 
     <mat-card-content>
-      <p><strong>First name:</strong> {{ vm.firstName ?? "Not set" }}</p>
-      <p><strong>Last name:</strong> {{ vm.lastName ?? "Not set" }}</p>
+      <p><strong>First name</strong> {{ vm.firstName ?? "Not set" }}</p>
+      <p><strong>Last name</strong> {{ vm.lastName ?? "Not set" }}</p>
 
-      <p><strong>Role:</strong> {{ vm.roleName }}</p>
-      <p><strong>Joined:</strong> {{ vm.createdAt | date: "medium" }}</p>
-      <p><strong>Last updated:</strong> {{ vm.updatedAt | date: "medium" }}</p>
+      <p><strong>Role</strong> {{ vm.roleName }}</p>
+      <p><strong>Joined</strong> {{ vm.createdAt | date: "medium" }}</p>
+      <p><strong>Last updated</strong> {{ vm.updatedAt | date: "medium" }}</p>
     </mat-card-content>
+
+    <button mat-button color="warn" (click)="onConfirmDelete(confirmDelete)">
+      Delete Account
+    </button>
   </mat-card>
+
+  <ng-template #confirmDelete>
+    <h2 mat-dialog-title>Delete account?</h2>
+    <mat-dialog-content>
+      This will permanently remove your account and all data.
+    </mat-dialog-content>
+    <mat-dialog-actions align="end">
+      <button mat-button mat-dialog-close>Cancel</button>
+      <button
+        mat-flat-button
+        color="warn"
+        (click)="onDeleteAccount()"
+        cdkFocusInitial
+      >
+        Delete
+      </button>
+    </mat-dialog-actions>
+  </ng-template>
 </ng-container>

@@ -5,6 +5,7 @@ import {
   catchError,
   map,
   type Observable,
+  tap,
   throwError,
 } from 'rxjs';
 import { type AuthSchema, authSchema } from './auth.schema';
@@ -15,19 +16,10 @@ import { type AuthSchema, authSchema } from './auth.schema';
 export class AuthService {
   readonly #http = inject(HttpClient);
 
-  readonly #store = new BehaviorSubject<AuthSchema>({
-    id: 0,
-    createdAt: '',
-    email: '',
-    firstName: '',
-    lastName: '',
-    updatedAt: '',
-    roleName: '',
-  });
-
+  readonly #store = new BehaviorSubject<AuthSchema | undefined>(undefined);
   readonly #userState = this.#store.asObservable();
 
-  userState() {
+  userState(): Observable<AuthSchema | undefined> {
     return this.#userState;
   }
 
@@ -108,5 +100,17 @@ export class AuthService {
           return auth;
         }),
       );
+  }
+
+  deleteAccount() {
+    return this.#http.delete('/api/auth/me').pipe(
+      tap(() => {
+        this.#store.next(undefined);
+      }),
+
+      catchError((err) => {
+        return throwError(() => err);
+      }),
+    );
   }
 }

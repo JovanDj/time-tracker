@@ -153,4 +153,8 @@ export class KnexAuthRepository implements AuthRepository {
 			return userSchema.parse(row);
 		});
 	}
+
+	async deleteUser(userId: UserSchema["id"]): Promise<void> {
+		await this.#knex("users").where({ id: userId }).delete();
+	}
 }

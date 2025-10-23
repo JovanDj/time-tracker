@@ -175,4 +175,23 @@ export class AuthController {
 			return res.status(500).json({ error: "Failed to update user" });
 		}
 	}
+
+	async deleteAccount(req: express.Request, res: express.Response) {
+		try {
+			const { user } = req;
+
+			if (!user) {
+				throw new Error("User not found.");
+			}
+
+			await this.#authService.deleteAccount(user.id);
+
+			res.clearCookie("jwt", req.app.locals["cookieOptions"]);
+
+			return res.status(204).json({ message: "User account deleted." });
+		} catch (err) {
+			console.error(err);
+			return res.status(500).json({ error: "Failed to delete account" });
+		}
+	}
 }

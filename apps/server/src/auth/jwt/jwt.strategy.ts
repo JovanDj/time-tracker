@@ -22,9 +22,8 @@ passport.use(
 			);
 
 			if (!user) {
-				throw new Error("User not found.");
+				return done(null, false);
 			}
-
 			const { password: _, ...safeUser } = user;
 
 			return done(null, {

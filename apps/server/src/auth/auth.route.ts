@@ -33,3 +33,9 @@ authRouter.patch(
 	passport.authenticate("jwt", { session: false }),
 	authController.updateProfile.bind(authController),
 );
+
+authRouter.delete(
+	"/me",
+	passport.authenticate("jwt", { session: false }),
+	authController.deleteAccount.bind(authController),
+);

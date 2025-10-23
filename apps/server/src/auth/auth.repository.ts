@@ -24,4 +24,5 @@ export interface AuthRepository {
 		firstName: string,
 		lastName: string,
 	): Promise<UserSchema | undefined>;
+	deleteUser(userId: number): Promise<void>;
 }

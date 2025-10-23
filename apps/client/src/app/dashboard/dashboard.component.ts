@@ -2,6 +2,7 @@ import { AsyncPipe, NgIf } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { Router, RouterLink, RouterOutlet } from '@angular/router';
@@ -18,6 +19,7 @@ import { AuthService } from '../auth/auth.service';
     RouterOutlet,
     RouterLink,
     MatButtonModule,
+    MatIconModule,
   ],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
@@ -28,7 +30,7 @@ export class DashboardComponent {
   readonly #router = inject(Router);
   readonly #snack = inject(MatSnackBar);
 
-  protected readonly vm$: Observable<AuthSchema> =
+  protected readonly vm$: Observable<AuthSchema | undefined> =
     this.#authService.userState();
 
   protected onLogout() {
