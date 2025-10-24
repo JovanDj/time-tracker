@@ -54,7 +54,7 @@ export class LoginComponent {
         take(1),
         tap(() => {
           this.#snack.open('Successfully logged in', '', { duration: 3000 });
-          return this.#router.navigate(['/dashboard', 'profile']);
+          return this.#router.navigate(['/dashboard']);
         }),
         catchError((err) => {
           if (err instanceof HttpErrorResponse) {

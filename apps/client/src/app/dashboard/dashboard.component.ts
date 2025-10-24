@@ -3,8 +3,12 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatListModule } from '@angular/material/list';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatToolbarModule } from '@angular/material/toolbar';
+
 import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { catchError, type Observable, take, tap, throwError } from 'rxjs';
 import type { AuthSchema } from '../auth/auth.schema';
@@ -20,6 +24,9 @@ import { AuthService } from '../auth/auth.service';
     RouterLink,
     MatButtonModule,
     MatIconModule,
+    MatSidenavModule,
+    MatListModule,
+    MatMenuModule,
   ],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',

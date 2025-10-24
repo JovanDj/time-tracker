@@ -7,7 +7,7 @@ export const authSchema = z.object({
   email: z.email(),
   updatedAt: z.iso.datetime({ offset: true }),
   createdAt: z.iso.datetime({ offset: true }),
-  roleName: z.string(),
+  roleName: z.enum(['user', 'admin']),
 });
 
 export type AuthSchema = z.output<typeof authSchema>;
