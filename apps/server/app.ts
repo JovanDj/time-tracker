@@ -5,6 +5,7 @@ import helmet from "helmet";
 import { env } from "./env.schema.js";
 import { authRouter } from "./src/auth/auth.route.js";
 import passport from "./src/auth/jwt/jwt.strategy.js";
+import { adminUserRouter } from "./src/users/users.route.ts";
 
 export const app = express();
 
@@ -75,3 +76,8 @@ app.get("/", (_req, res) => {
 });
 
 app.use("/auth", authRouter);
+app.use(
+	"/users",
+	passport.authenticate("jwt", { session: false }),
+	adminUserRouter,
+);

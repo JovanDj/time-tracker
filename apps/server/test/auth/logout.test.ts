@@ -1,7 +1,7 @@
 import { describe, it, type TestContext } from "node:test";
 import request from "supertest";
-import { app } from "../app.js";
-import { setupTestDatabase } from "./setup.ts";
+import { app } from "../../app.ts";
+import { setupTestDatabase } from "../setup.ts";
 
 describe("Logging out", () => {
 	setupTestDatabase();

@@ -51,7 +51,10 @@ export class AuthService {
 			return;
 		}
 
-		const token: string = this.signJwtToken({ email: user.email, id: user.id });
+		const token: string = this.signJwtToken({
+			email: user.email,
+			id: user.id,
+		});
 
 		return {
 			token,

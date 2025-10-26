@@ -1,31 +1,35 @@
 import { describe, it, type TestContext } from "node:test";
 import request from "supertest";
-import { app } from "../app.js";
-import { setupTestDatabase } from "./setup.ts";
+import { app } from "../../app.ts";
+import { setupTestDatabase } from "../setup.ts";
 
-describe("Registering", () => {
+describe("Logging in", () => {
 	setupTestDatabase();
 
-	it("automatically logs in the user after registration", async (t: TestContext) => {
+	it("returns 200 and sets cookie when credentials are valid", async (t: TestContext) => {
 		t.plan(4);
 
-		const res = await request(app)
+		await request(app)
 			.post("/auth/register")
-			.send({ email: "new@mail.com", password: "strongpass" })
+			.send({ email: "valid@mail.com", password: "correctpass" });
+
+		const res = await request(app)
+			.post("/auth/login")
+			.send({ email: "valid@mail.com", password: "correctpass" })
 			.set("Accept", "application/json");
 
-		t.assert.deepStrictEqual(res.statusCode, 201);
-		t.assert.deepStrictEqual(res.body.email, "new@mail.com");
-		t.assert.deepStrictEqual(res.type, "application/json");
+		t.assert.deepStrictEqual(res.statusCode, 200);
 		t.assert.match(res.get("set-cookie")?.[0] ?? "", /jwt/);
+		t.assert.deepStrictEqual(res.body.email, "valid@mail.com");
+		t.assert.deepStrictEqual(res.type, "application/json");
 	});
 
 	it("returns 400 when body shape is invalid", async (t: TestContext) => {
 		t.plan(3);
 
 		const res = await request(app)
-			.post("/auth/register")
-			.send({ username: "missingFields" })
+			.post("/auth/login")
+			.send({ username: "wrongField" })
 			.set("Accept", "application/json");
 
 		t.assert.deepStrictEqual(res.statusCode, 400);
@@ -49,7 +53,7 @@ describe("Registering", () => {
 		t.plan(3);
 
 		const res = await request(app)
-			.post("/auth/register")
+			.post("/auth/login")
 			.set("Accept", "application/json");
 
 		t.assert.deepStrictEqual(res.statusCode, 400);
@@ -61,22 +65,19 @@ describe("Registering", () => {
 		t.assert.deepStrictEqual(res.type, "application/json");
 	});
 
-	it("returns 409 when email already exists", async (t: TestContext) => {
+	it("returns 401 when credentials are invalid", async (t: TestContext) => {
 		t.plan(4);
 
-		await request(app)
-			.post("/auth/register")
-			.send({ email: "taken@mail.com", password: "strongpass" })
-			.set("Accept", "application/json");
-
 		const res = await request(app)
-			.post("/auth/register")
-			.send({ email: "taken@mail.com", password: "anotherpass" })
+			.post("/auth/login")
+			.send({ email: "user@mail.com", password: "wrongpass" })
 			.set("Accept", "application/json");
 
-		t.assert.deepStrictEqual(res.statusCode, 409);
-		t.assert.deepStrictEqual(res.body, { error: "Email already exists" });
+		t.assert.deepStrictEqual(res.unauthorized, true);
+		t.assert.deepStrictEqual(res.statusCode, 401);
+		t.assert.deepStrictEqual(res.body, {
+			error: "Invalid email or password",
+		});
 		t.assert.deepStrictEqual(res.type, "application/json");
-		t.assert.deepStrictEqual(res.clientError, true);
 	});
 });
