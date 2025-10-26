@@ -12,8 +12,10 @@ export class UsersService {
 			.select(
 				"users.id",
 				"email",
-				"first_name",
-				"last_name",
+				"first_name AS firstName",
+				"last_name AS lastName",
+				"users.updated_at AS updatedAt",
+				"users.created_at AS createdAt",
 				"roles.name AS roleName",
 			)
 			.join("roles", "users.role_id", "roles.id")
