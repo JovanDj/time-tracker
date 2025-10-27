@@ -18,6 +18,7 @@
 	"devDependencies": {
 		"@babel/register": "^7.28.3",
 		"@biomejs/biome": "^2.2.5",
+		"@faker-js/faker": "^10.1.0",
 		"@tsconfig/node-ts": "^23.6.1",
 		"@tsconfig/node22": "^22.0.2",
 		"@tsconfig/recommended": "^1.0.10",
