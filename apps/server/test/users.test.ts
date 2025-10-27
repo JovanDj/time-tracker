@@ -67,4 +67,71 @@ describe("Listing users (Admin)", () => {
 		t.assert.match(res.body[0].email, /@mail\.com$/);
 		t.assert.deepStrictEqual(res.type, "application/json");
 	});
+
+	it("returns 403 when non-admin tries to update or delete", async (t: TestContext) => {
+		t.plan(2);
+
+		await request(app)
+			.post("/auth/register")
+			.send({ email: "user@mail.com", password: "pass123" });
+
+		const login = await request(app)
+			.post("/auth/login")
+			.send({ email: "user@mail.com", password: "pass123" });
+
+		const cookie = login.get("set-cookie")?.[0] ?? "";
+
+		const resUpdate = await request(app)
+			.patch("/users/1")
+			.set("Cookie", cookie)
+			.send({ firstName: "New" });
+
+		t.assert.strictEqual(resUpdate.statusCode, 403);
+
+		const resDelete = await request(app)
+			.delete("/users/1")
+			.set("Cookie", cookie);
+
+		t.assert.strictEqual(resDelete.statusCode, 403);
+	});
+
+	it("allows admin to update and delete a user", async (t: TestContext) => {
+		t.plan(3);
+
+		await db("users").insert({
+			email: "admin@test.com",
+			password: await hashing.hash("adminpass"),
+			role_id: 1,
+		});
+
+		const [user] = await db("users")
+			.insert({
+				email: "target@mail.com",
+				password: await hashing.hash("userpass"),
+				role_id: 2,
+			})
+			.returning(["id"]);
+
+		const login = await request(app)
+			.post("/auth/login")
+			.send({ email: "admin@test.com", password: "adminpass" });
+
+		const cookie = login.get("set-cookie")?.[0] ?? "";
+
+		const update = await request(app)
+			.patch(`/users/${user.id}`)
+			.set("Cookie", cookie)
+			.send({ firstName: "Updated", lastName: "User" });
+
+		t.assert.strictEqual(update.statusCode, 200);
+
+		const del = await request(app)
+			.delete(`/users/${user.id}`)
+			.set("Cookie", cookie);
+
+		t.assert.strictEqual(del.statusCode, 204);
+
+		const exists = await db("users").where({ id: user.id }).first();
+		t.assert.strictEqual(exists, undefined);
+	});
 });

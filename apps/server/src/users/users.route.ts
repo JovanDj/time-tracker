@@ -8,3 +8,8 @@ adminUserRouter.use(adminAuth);
 adminUserRouter.get("/", usersController.index.bind(usersController));
 adminUserRouter.patch("/:id", usersController.update.bind(usersController));
 adminUserRouter.delete("/:id", usersController.delete.bind(usersController));
+
+adminUserRouter.post(
+	"/:id/approvals",
+	usersController.approveAccount.bind(usersController),
+);

@@ -51,4 +51,15 @@ export class UsersService {
 	async delete(id: number): Promise<void> {
 		await this.#db("users").where({ id }).delete();
 	}
+
+	async approveAccount(userId: number, approverId: number): Promise<unknown> {
+		const [approval] = await this.#db("approvals")
+			.insert({
+				approver_id: approverId,
+				user_id: userId,
+			})
+			.returning(["user_id", "approver_id", "approved_at"]);
+
+		return approval;
+	}
 }
