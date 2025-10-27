@@ -1,10 +1,10 @@
-import bcrypt from "bcrypt";
 import type { Knex } from "knex";
+import { hashing } from "../lib/index.ts";
 
 export async function seed(knex: Knex): Promise<void> {
 	await knex("users").insert({
 		email: "admin@mail.com",
-		password: await bcrypt.hash("admin", 10),
+		password: await hashing.hash("admin"),
 		role_id: 1,
 	});
 }
