@@ -101,7 +101,21 @@ This should generate tables in your postgres database.
 
 ## Testing
 
-Run client tests with these commands:
+Run all tests from the repo root:
+
+```bash
+npm test
+```
+
+This runs the server and client workspace test scripts once and exits with a pass/fail status.
+
+Backend tests require Postgres to be running on the configured local port, so start the Docker stack first if needed:
+
+```bash
+docker compose up -d
+```
+
+Run client tests only with these commands:
 
 ```bash
 cd apps/client
@@ -109,6 +123,12 @@ cd apps/client
 
 ```bash
 npm run test
+```
+
+For interactive frontend watch mode:
+
+```bash
+npm run test:watch
 ```
 
 ## PG Admin

@@ -1,5 +1,5 @@
 {
-	"author": "",
+	"author": "Jovan Djukic <jovandjukic2@gmail.com> (https://jovandjukic.com)",
 	"dependencies": {
 		"bcrypt": "^6.0.0",
 		"cookie": "^1.0.2",
@@ -14,7 +14,7 @@
 		"pg": "^8.16.3",
 		"zod": "^4.1.12"
 	},
-	"description": "",
+	"description": "Express and PostgreSQL backend for the Time Tracker app, including auth, roles, and user management.",
 	"devDependencies": {
 		"@babel/register": "^7.28.3",
 		"@biomejs/biome": "^2.2.5",
@@ -39,7 +39,13 @@
 		"tsx": "^4.20.6",
 		"typescript": "^5.9.3"
 	},
-	"keywords": [],
+	"keywords": [
+		"express",
+		"postgresql",
+		"authentication",
+		"api",
+		"typescript"
+	],
 	"main": "index.js",
 	"name": "server",
 	"scripts": {

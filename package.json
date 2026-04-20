@@ -1,24 +1,41 @@
 {
-  "name": "time-tracker",
-  "version": "1.0.0",
-  "main": "index.js",
-  "private": true,
-  "type": "module",
-  "workspaces": [
-    "apps/*"
-  ],
-  "scripts": {
-    "dev:server": "npm --workspace=apps/server run dev",
-    "dev:client": "npm --workspace=apps/client run start",
-    "dev": "run-p dev:server dev:client"
-  },
-  "keywords": [],
-  "author": "",
-  "description": "",
-  "volta": {
-    "node": "22.20.0"
-  },
-  "devDependencies": {
-    "npm-run-all": "^4.1.5"
-  }
+	"name": "time-tracker",
+	"version": "1.0.0",
+	"main": "index.js",
+	"private": true,
+	"type": "module",
+	"workspaces": [
+		"apps/*"
+	],
+	"scripts": {
+		"dev:server": "npm --workspace=apps/server run dev",
+		"dev:client": "npm --workspace=apps/client run start",
+		"dev": "run-p dev:server dev:client",
+		"test": "npm run test --workspaces"
+	},
+	"keywords": [
+		"time-tracking",
+		"angular",
+		"express",
+		"postgresql",
+		"monorepo",
+		"typescript"
+	],
+	"author": "Jovan Djukic <jovandjukic2@gmail.com> (https://jovandjukic.com)",
+	"description": "Full-stack time tracking monorepo built with Angular, Express, PostgreSQL, and TypeScript.",
+	"license": "MIT",
+	"homepage": "https://jovandjukic.com",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/JovanDj/time-tracker.git"
+	},
+	"bugs": {
+		"url": "https://github.com/JovanDj/time-tracker/issues"
+	},
+	"volta": {
+		"node": "22.20.0"
+	},
+	"devDependencies": {
+		"npm-run-all": "^4.1.5"
+	}
 }

@@ -64,7 +64,7 @@ describe("Listing users (Admin)", () => {
 
 		t.assert.deepStrictEqual(res.statusCode, 200);
 		t.assert.ok(res.body.length >= 3);
-		t.assert.match(res.body[0].email, /@mail\.com$/);
+		t.assert.match(res.body[0].email, /@test\.com$/);
 		t.assert.deepStrictEqual(res.type, "application/json");
 	});
 
